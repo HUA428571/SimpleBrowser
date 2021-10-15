@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WebViewTest</string>
+    <string name="Btn_GO">GO</string>
+    <string name="Btn_FullScrean">FullScreen</string>
+    <string name="Btn_History">Back</string>
+    <string name="Btn_Favorites">Forward</string>
+    <string name="Tip_IllegalURL">IllegalURL!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

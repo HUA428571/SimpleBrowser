@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WebViewTest</string>
+    <string name="Btn_GO">访问</string>
+    <string name="Btn_FullScrean">全屏</string>
+    <string name="Btn_History">返回</string>
+    <string name="Btn_Favorites">前进</string>
+    <string name="Tip_IllegalURL">不支持的网址！</string>
+</resources>
