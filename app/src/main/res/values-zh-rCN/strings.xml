@@ -6,4 +6,6 @@
     <string name="Btn_History">返回</string>
     <string name="Btn_Favorites">前进</string>
     <string name="Tip_IllegalURL">不支持的网址！</string>
+    <string name="url_home">cn.bing.com</string>
+    <string name="hello_blank_fragment">233</string>
 </resources>
