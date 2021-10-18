@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/constraintLayout_bottom_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -26,7 +26,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:elevation="5dp">
 
         <EditText
             android:id="@+id/urlTextInput"
@@ -46,41 +47,81 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Btn_GO"
-            app:layout_constraintBottom_toTopOf="@+id/Btn_FullScrean"
+            app:layout_constraintBottom_toTopOf="@+id/imageButton_FullScreen"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/Btn_FullScrean"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Btn_FullScrean"
+        <ImageButton
+            android:id="@+id/imageButton_Back"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@mipmap/btn_back"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/imageButton_Forward"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@mipmap/btn_forward"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_History"
+            app:layout_constraintStart_toEndOf="@+id/imageButton_Back" />
+
+        <ImageButton
+            android:id="@+id/imageButton_History"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@mipmap/btn_history"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_Favourite"
+            app:layout_constraintStart_toEndOf="@+id/imageButton_Forward" />
+
+        <ImageButton
+            android:id="@+id/imageButton_Favourite"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@mipmap/btn_favourite"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_Download"
+            app:layout_constraintStart_toEndOf="@+id/imageButton_History" />
+
+        <ImageButton
+            android:id="@+id/imageButton_Download"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@mipmap/btn_download"
+            android:scaleX="0.5"
+            android:scaleY="0.6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_FullScreen"
+            app:layout_constraintStart_toEndOf="@+id/imageButton_Favourite" />
+
+        <ImageButton
+            android:id="@+id/imageButton_FullScreen"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@mipmap/btn_full_screen"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
-            android:id="@+id/Btn_GoForward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Btn_Favorites"
-            app:layout_constraintBaseline_toBaselineOf="@+id/Btn_FullScrean"
-            app:layout_constraintEnd_toStartOf="@+id/Btn_FullScrean"
-            app:layout_constraintStart_toEndOf="@+id/Btn_GoBack" />
-
-        <Button
-            android:id="@+id/Btn_GoBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Btn_History"
-            app:layout_constraintBaseline_toBaselineOf="@+id/Btn_GoForward"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="top"
-            app:constraint_referenced_ids="Btn_GoBack,Btn_GoForward,Btn_FullScrean" />
+            app:constraint_referenced_ids="imageButton_Back,imageButton_Forward,imageButton_History,imageButton_Favourite,imageButton_Download,imageButton_FullScreen" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
