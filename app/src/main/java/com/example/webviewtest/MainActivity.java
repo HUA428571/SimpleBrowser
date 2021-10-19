@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
 
-
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
