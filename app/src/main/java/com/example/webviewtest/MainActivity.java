@@ -6,7 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,17 +26,101 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.security.InvalidParameterException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
 
 	private WebView webView;
 	private long exitTime = 0;
+	public static final String TAG= "MainActivity";
+	String NowUrl= null;
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
+
+	public void SaveHtml(String str){
+		try
+		{
+			URL url=null;
+			url=new URL(str);
+			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
+			File appDir = new File("data/data/com.example.webviewtest/SaveInternet/html");//xxxx为手机本地生成的文件夹名//称，自定义
+			if (!appDir.exists()) {
+				appDir.mkdir();
+			}
+			@SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date curDate =  new Date(System.currentTimeMillis());
+			//获取当前时间
+			String  str0 =  formatter.format(curDate);
+			//当前时间来命名图片,这样就不会覆盖之前的图片,如果此值固定就只有一张图片，以前的会被替换；
+			String fileName = str0 + ".html";
+			File filePath = new File(appDir,fileName);
+			if (!filePath.exists()) {
+				Log.d(TAG,"file is not exist");
+				filePath.createNewFile();
+			}
+			FileWriter fin=new FileWriter(filePath);
+			String line;
+			while((line=in.readLine())!=null)
+			{
+				fin.write(line);
+			}
+			fin.close();
+			in.close();
+		}catch (MalformedURLException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
+	private void saveJpg(View v) {
+		try {
+			Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+			Canvas canvas = new Canvas();
+			canvas.setBitmap(bitmap);
+			v.draw(canvas);
+
+			// 首先保存图片路径
+
+			File appDir = new File("data/data/com.example.webviewtest/SaveInternet/jpg");//xxxx为手机本地生成的文件夹名//称，自定义
+			if (!appDir.exists()) {
+				appDir.mkdir();
+			}
+			@SuppressLint("SimpleDateFormat") SimpleDateFormat   formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date curDate =  new Date(System.currentTimeMillis());
+			//获取当前时间
+			String  str =  formatter.format(curDate);
+			//当前时间来命名图片,这样就不会覆盖之前的图片,如果此值固定就只有一张图片，以前的会被替换；
+			String fileName = str + ".jpg";
+			File file = new File(appDir, fileName);
+
+			try {
+				FileOutputStream fos = new FileOutputStream(file);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+			} catch (FileNotFoundException e) {
+				throw new InvalidParameterException();
+			}
+			bitmap.recycle();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -52,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		Btn_Back.setOnClickListener(this);
 		ImageButton Btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
 		Btn_GoForward.setOnClickListener(this);
+		ImageButton btn_downLoad= (ImageButton) findViewById(R.id.imageButton_Download);
+		btn_downLoad.setOnClickListener(this);
 //		ImageButton btn_FullScreen = (ImageButton) findViewById(R.id.imageButton_FullScreen);
 //		btn_FullScreen.setOnClickListener(this);
 
@@ -63,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		webView.getSettings().setBuiltInZoomControls(true);
 		// 隐藏原生的缩放控件
 		webView.getSettings().setDisplayZoomControls(false);
+
+		webView.getSettings().setDomStorageEnabled(true);
 
 		//加载主页
 		webView.loadUrl("https://"+getResources().getString(R.string.url_home));
@@ -296,10 +388,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					webView.reload();
 				}
 				break;
+			case R.id.imageButton_Download:
+				File appDir0 = new File("data/data/com.example.webviewtest/SaveInternet");//xxxx为手机本地生成的文件夹名//称，自定义
+				if (!appDir0.exists()) {
+					appDir0.mkdir();
+				}
+				NowUrl= webView.getOriginalUrl();
+				new Thread(runnable).start();
+				@SuppressLint("SimpleDateFormat") SimpleDateFormat   formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date curDate =  new Date(System.currentTimeMillis());
+				//获取当前时间
+				String  str =  formatter.format(curDate);
+				File appDir1 = new File("data/data/com.example.webviewtest/SaveInternet/mht");//xxxx为手机本地生成的文件夹名//称，自定义
+				if (!appDir1.exists()) {
+					appDir1.mkdir();
+				}
+				webView.saveWebArchive(appDir1+"/"+str,false,null);
+				String local= "网页已保存到data/data/com.example.webviewtest/SaveInternet目录下";
+				Toast.makeText(MainActivity.this,local,Toast.LENGTH_SHORT).show();
+				break;
+
 
 		}
 	}
 
+	Runnable runnable = new Runnable(){
+		@Override
+		public void run() {
+			/**
+			 * 要执行的操作
+			 */
+			SaveHtml(NowUrl);
+			WebView webView= (WebView) findViewById(R.id.web_view);
+			//saveMht(webView);
+			saveJpg(getWindow().getDecorView());
+			// 执行完毕后给handler发送一个空消息
+			handler.sendEmptyMessage(0);
+		}
+	};
+
+	private Handler handler = new Handler(new Handler.Callback() {
+
+		@Override
+		public boolean handleMessage(Message msg) {
+			return false;
+		}
+	});
 //	@Override
 //	public boolean onTouchEvent(MotionEvent event) {
 //		//继承了Activity的onTouchEvent方法，直接监听点击事件
