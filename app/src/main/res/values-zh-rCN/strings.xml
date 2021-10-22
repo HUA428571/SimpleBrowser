@@ -8,4 +8,8 @@
     <string name="Tip_IllegalURL">不支持的网址！</string>
     <string name="url_home">cn.bing.com</string>
     <string name="hello_blank_fragment">233</string>
+    <string name="Button_RotationLock">旋转锁定</string>
+    <string name="imageButton_NoPictureBrowsing">无图模式</string>
+    <string name="imageButton_Download">下载网页</string>
+    <string name="imageButton_FullScreen">全屏浏览</string>
 </resources>

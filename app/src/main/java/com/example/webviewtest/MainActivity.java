@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
+	//设定一个flag表示现在设置窗口的显示状态
+	private boolean flag_isSettingsVisible = false;
+	//设定一个flag表示现在是否处于无图模式
+	private boolean flag_isNoPictureBrowsing = false;
 
 	public void SaveHtml(String str){
 		try
@@ -122,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
+	@SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled"})
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -131,19 +135,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//隐藏标题栏
 		getSupportActionBar().hide();
 
+		//设置菜单栏的隐藏
+		View settings = findViewById(R.id.constraintLayout_menu);
+		settings.setVisibility(View.INVISIBLE);
+
 		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
 		//绑定按钮点击事件
 		ImageButton btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
 		btn_GO.setOnClickListener(this);
-		ImageButton Btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
-		Btn_Back.setOnClickListener(this);
-		ImageButton Btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
-		Btn_GoForward.setOnClickListener(this);
+		ImageButton btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
+		btn_Back.setOnClickListener(this);
+		ImageButton btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
+		btn_GoForward.setOnClickListener(this);
+		ImageButton btn_Settings = (ImageButton) findViewById(R.id.imageButton_Settings);
+		btn_Settings.setOnClickListener(this);
 		ImageButton btn_downLoad= (ImageButton) findViewById(R.id.imageButton_Download);
 		btn_downLoad.setOnClickListener(this);
-//		ImageButton btn_FullScreen = (ImageButton) findViewById(R.id.imageButton_FullScreen);
-//		btn_FullScreen.setOnClickListener(this);
+		ImageButton btn_NoPictureBrowsing= (ImageButton) findViewById(R.id.imageButton_NoPictureBrowsing);
+		btn_NoPictureBrowsing.setOnClickListener(this);
+		ImageButton btn_FullScreen= (ImageButton) findViewById(R.id.imageButton_FullScreen);
+		btn_FullScreen.setOnClickListener(this);
+		ImageButton btn_RotationLock= (ImageButton) findViewById(R.id.imageButton_RotationLock);
+		btn_RotationLock.setOnClickListener(this);
 
 		// 启用 js 功能
 		webView.getSettings().setJavaScriptEnabled(true);
@@ -198,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		{
 			//监听滑动的主要目的就在于bar的隐藏于显示，我们在这里首先
 			View bar = findViewById(R.id.constraintLayout_bottom_bar);
+			View settings = findViewById(R.id.constraintLayout_menu);
 			//滑动监听相关
 			//手指按下的点为(x1, y1)手指离开屏幕的点为(x2, y2)
 			float x1 = 0;
@@ -230,6 +245,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 							flag_isBarVisible = false;
 						}
 						bar.setVisibility(View.INVISIBLE);
+						//同时隐藏菜单栏（如果有）
+						settings.setVisibility(View.INVISIBLE);
+						flag_isSettingsVisible = false;
 					} else if (y2 - y1 > 50)
 					{
 						//Toast.makeText(MainActivity.this, "向下滑", Toast.LENGTH_SHORT).show();
@@ -253,10 +271,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				return false;
 			}
 		});
-
-
-
-
 
 		//设置输入框
 		editText_URL.setOnFocusChangeListener(new View.OnFocusChangeListener()
@@ -334,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 	}
 
-
 	@SuppressLint("NonConstantResourceId")
 	@Override
 	public void onClick(View view)
@@ -346,6 +359,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				break;
 			case R.id.imageButton_Forward:
 				webView.goForward();
+				break;
+			case R.id.imageButton_Settings:
+				View settings = findViewById(R.id.constraintLayout_menu);
+				if (flag_isSettingsVisible)
+				{
+					settings.setVisibility(View.INVISIBLE);
+					flag_isSettingsVisible = false;
+				}
+				else
+				{
+					settings.setVisibility(View.VISIBLE);
+					flag_isSettingsVisible = true;
+				}
 				break;
 			case R.id.imageButton_GO:
 				EditText editText_URL = findViewById(R.id.urlTextInput);
@@ -406,6 +432,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				webView.saveWebArchive(appDir1+"/"+str,false,null);
 				String local= "网页已保存到data/data/com.example.webviewtest/SaveInternet目录下";
 				Toast.makeText(MainActivity.this,local,Toast.LENGTH_SHORT).show();
+				break;
+			case R.id.imageButton_NoPictureBrowsing:
+				//设置无图模式
+				if(!flag_isNoPictureBrowsing)
+				{
+					webView.getSettings().setBlockNetworkImage(true);
+				}
+				else
+				{
+					webView.getSettings().setBlockNetworkImage(false);
+				}
 				break;
 
 
