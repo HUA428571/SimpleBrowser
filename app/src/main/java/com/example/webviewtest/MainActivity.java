@@ -5,8 +5,13 @@ import static android.webkit.URLUtil.isHttpUrl;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,7 +25,9 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.database.Cursor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -28,6 +35,7 @@ import java.net.URLEncoder;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
 
+	SQLiteDatabase db;
 	private WebView webView;
 	private long exitTime = 0;
 
@@ -42,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		setContentView(R.layout.botton_bar);
 		//隐藏标题栏
 		getSupportActionBar().hide();
-
+		application app = (application) getApplication();
 		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
 		//绑定按钮点击事件
@@ -52,6 +60,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		Btn_Back.setOnClickListener(this);
 		ImageButton Btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
 		Btn_GoForward.setOnClickListener(this);
+		ImageButton Btn_Favourite = (ImageButton) findViewById(R.id.imageButton_Favourite);
+		Btn_Favourite.setOnClickListener(this);
+		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
+		Btn_History.setOnClickListener(this);
+
+		//创建数据库及数据表
+		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
+		String sql="CREATE TABLE IF NOT EXISTS test (title VARCHAR(32),url VARCHAR(32))";
+		db.execSQL(sql);
+
+
 //		ImageButton btn_FullScreen = (ImageButton) findViewById(R.id.imageButton_FullScreen);
 //		btn_FullScreen.setOnClickListener(this);
 
@@ -64,9 +83,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// 隐藏原生的缩放控件
 		webView.getSettings().setDisplayZoomControls(false);
 
-		//加载主页
-		webView.loadUrl("https://"+getResources().getString(R.string.url_home));
-		editText_URL.setText(webView.getTitle());
+
+
+
+			//加载主页
+			webView.loadUrl("https://"+getResources().getString(R.string.url_home));
+			editText_URL.setText(webView.getTitle());
+
+
+
+
 
 		//解决重定向导致网页无法访问以及返回键的问题
 		webView.setWebViewClient(new WebViewClient()
@@ -81,6 +107,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				startUrl = url;
 			}
 
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				super.onPageFinished(view, url);
+
+				//System.out.println(url);
+				Cursor cur=db.rawQuery("select * from test",null);
+				ContentValues cv = new ContentValues(2);
+				int sum=cur.getCount();
+				System.out.println("sum:"+sum);
+				if(sum==0){
+					cv.put("url",url);
+					cv.put("title","test");
+					db.insert("test", null,cv);
+					System.out.println("111111111111111111");
+				}
+				else{
+					for(int i=0;i<sum;i++) {
+						cur.moveToPosition(i);
+						System.out.println("url:"+url);
+						System.out.println("cur:"+cur.getString(1));
+						if(url.equals(cur.getString(1)))
+						{
+							System.out.println("151566116516561");
+							db.execSQL("DElETE  FROM test where url= ?", new String[]{url});
+							//db.delete("test","url= ? ",new String[] {url});
+							cv.put("url",url);
+							cv.put("title","test");
+							db.insert("test", null,cv);
+							//db.close();
+							break;
+						}
+						if(i==sum-1)
+						{
+							cv.put("url",url);
+							cv.put("title","test");
+							db.insert("test", null,cv);
+							System.out.println("111111111111111111");
+						}
+
+					}
+				}
+
+			}
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
 			{
@@ -288,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						urlInput = "http://" + urlInput;
 //					}
 					webView.loadUrl(urlInput);
+					ContentValues cv = new ContentValues(2);
 					// 取消掉地址栏的焦点
 					editText_URL.clearFocus();
 				} else
@@ -296,8 +366,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					webView.reload();
 				}
 				break;
+			case R.id.imageButton_Favourite:
+				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
+				startActivity(favouriteIntent);
+				//setContentView(R.layout.activity_favourite);
+			case R.id.imageButton_History:
+				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
+				startActivity(historyIntent);
 
 		}
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		//webView.loadUrl(app.getUrl_from_favourite());
+	}
+	@Override
+	protected void onResume() {
+		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
+		EditText editText_URL = findViewById(R.id.urlTextInput);
+		//ContentValues cv = new ContentValues(2);
+		//System.out.println("url:"+webView.getUrl());
+		//cv.put("url",webView.getUrl());
+		//cv.put("title",webView.getTitle());
+		//db.insert("test", null,cv);
+		super.onResume();
+		application app = (application) getApplication();
+
+		if(app.getUrl_from_favourite()=="")
+		{
+			//webView.loadUrl();
+		}
+		else
+		{
+			//System.out.println("123456");
+			webView.loadUrl(app.getUrl_from_favourite());
+			editText_URL.setText(app.getTitle_from_favourite());
+			app.setUrl_from_favourite("");
+		}
+
+		if(app.getUrl_from_history()=="")
+		{
+			//webView.loadUrl();
+		}
+		else
+		{
+			//System.out.println("123456");
+			webView.loadUrl(app.getUrl_from_history());
+			editText_URL.setText(app.getTitle_from_history());
+			app.setUrl_from_history("");
+		}
+
+
+		//System.out.println("123456");
 	}
 
 //	@Override
