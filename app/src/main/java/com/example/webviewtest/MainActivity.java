@@ -10,7 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
+import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -29,8 +33,20 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.database.Cursor;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.security.InvalidParameterException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -38,11 +54,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	SQLiteDatabase db;
 	private WebView webView;
 	private long exitTime = 0;
+	public static final String TAG= "MainActivity";
+	String NowUrl= null;
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
+	//设定一个flag表示现在设置窗口的显示状态
+	private boolean flag_isSettingsVisible = false;
+	//设定一个flag表示现在是否处于无图模式
+	private boolean flag_isNoPictureBrowsing = false;
 
-	@SuppressLint("ClickableViewAccessibility")
+	public void SaveHtml(String str){
+		try
+		{
+			URL url=null;
+			url=new URL(str);
+			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
+			File appDir = new File("data/data/com.example.webviewtest/SaveInternet/html");//xxxx为手机本地生成的文件夹名//称，自定义
+			if (!appDir.exists()) {
+				appDir.mkdir();
+			}
+			@SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date curDate =  new Date(System.currentTimeMillis());
+			//获取当前时间
+			String  str0 =  formatter.format(curDate);
+			//当前时间来命名图片,这样就不会覆盖之前的图片,如果此值固定就只有一张图片，以前的会被替换；
+			String fileName = str0 + ".html";
+			File filePath = new File(appDir,fileName);
+			if (!filePath.exists()) {
+				Log.d(TAG,"file is not exist");
+				filePath.createNewFile();
+			}
+			FileWriter fin=new FileWriter(filePath);
+			String line;
+			while((line=in.readLine())!=null)
+			{
+				fin.write(line);
+			}
+			fin.close();
+			in.close();
+		}catch (MalformedURLException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled"})
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -50,30 +110,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		setContentView(R.layout.botton_bar);
 		//隐藏标题栏
 		getSupportActionBar().hide();
+
+		//设置菜单栏的隐藏
+		View settings = findViewById(R.id.constraintLayout_menu);
+		settings.setVisibility(View.INVISIBLE);
+
 		application app = (application) getApplication();
 		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
 		//绑定按钮点击事件
 		ImageButton btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
 		btn_GO.setOnClickListener(this);
-		ImageButton Btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
-		Btn_Back.setOnClickListener(this);
-		ImageButton Btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
-		Btn_GoForward.setOnClickListener(this);
+		ImageButton btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
+		btn_Back.setOnClickListener(this);
+		ImageButton btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
+		btn_GoForward.setOnClickListener(this);
+		ImageButton btn_Settings = (ImageButton) findViewById(R.id.imageButton_Settings);
+		btn_Settings.setOnClickListener(this);
+		ImageButton btn_downLoad= (ImageButton) findViewById(R.id.imageButton_Download);
+		btn_downLoad.setOnClickListener(this);
+		ImageButton btn_NoPictureBrowsing= (ImageButton) findViewById(R.id.imageButton_NoPictureBrowsing);
+		btn_NoPictureBrowsing.setOnClickListener(this);
+		ImageButton btn_FullScreen= (ImageButton) findViewById(R.id.imageButton_FullScreen);
+		btn_FullScreen.setOnClickListener(this);
+		ImageButton btn_RotationLock= (ImageButton) findViewById(R.id.imageButton_RotationLock);
+		btn_RotationLock.setOnClickListener(this);
+
 		ImageButton Btn_Favourite = (ImageButton) findViewById(R.id.imageButton_Favourite);
 		Btn_Favourite.setOnClickListener(this);
 		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
 		Btn_History.setOnClickListener(this);
 
-		//创建数据库及数据表
+
 		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
 		String sql="CREATE TABLE IF NOT EXISTS test (title VARCHAR(32),url VARCHAR(32))";
 		db.execSQL(sql);
-
-
-//		ImageButton btn_FullScreen = (ImageButton) findViewById(R.id.imageButton_FullScreen);
-//		btn_FullScreen.setOnClickListener(this);
-
 		// 启用 js 功能
 		webView.getSettings().setJavaScriptEnabled(true);
 		// 支持缩放，默认为true。是下面那个的前提。
@@ -83,16 +154,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// 隐藏原生的缩放控件
 		webView.getSettings().setDisplayZoomControls(false);
 
+		webView.getSettings().setDomStorageEnabled(true);
 
-
-
-			//加载主页
-			webView.loadUrl("https://"+getResources().getString(R.string.url_home));
-			editText_URL.setText(webView.getTitle());
-
-
-
-
+		//加载主页
+		webView.loadUrl("https://"+getResources().getString(R.string.url_home));
+		editText_URL.setText(webView.getTitle());
 
 		//解决重定向导致网页无法访问以及返回键的问题
 		webView.setWebViewClient(new WebViewClient()
@@ -175,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		{
 			//监听滑动的主要目的就在于bar的隐藏于显示，我们在这里首先
 			View bar = findViewById(R.id.constraintLayout_bottom_bar);
+			View settings = findViewById(R.id.constraintLayout_menu);
 			//滑动监听相关
 			//手指按下的点为(x1, y1)手指离开屏幕的点为(x2, y2)
 			float x1 = 0;
@@ -207,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 							flag_isBarVisible = false;
 						}
 						bar.setVisibility(View.INVISIBLE);
+						//同时隐藏菜单栏（如果有）
+						settings.setVisibility(View.INVISIBLE);
+						flag_isSettingsVisible = false;
 					} else if (y2 - y1 > 50)
 					{
 						//Toast.makeText(MainActivity.this, "向下滑", Toast.LENGTH_SHORT).show();
@@ -324,6 +394,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			case R.id.imageButton_Forward:
 				webView.goForward();
 				break;
+			case R.id.imageButton_Settings:
+				View settings = findViewById(R.id.constraintLayout_menu);
+				if (flag_isSettingsVisible)
+				{
+					settings.setVisibility(View.INVISIBLE);
+					flag_isSettingsVisible = false;
+				}
+				else
+				{
+					settings.setVisibility(View.VISIBLE);
+					flag_isSettingsVisible = true;
+				}
+				break;
 			case R.id.imageButton_GO:
 				EditText editText_URL = findViewById(R.id.urlTextInput);
 				//注意，这边我们指定输入法模式，在布局文件中
@@ -366,6 +449,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					webView.reload();
 				}
 				break;
+			case R.id.imageButton_Download:
+				File appDir0 = new File("data/data/com.example.webviewtest/SaveInternet");//xxxx为手机本地生成的文件夹名//称，自定义
+				if (!appDir0.exists()) {
+					appDir0.mkdir();
+				}
+				NowUrl= webView.getOriginalUrl();
+				new Thread(runnable).start();
+				@SuppressLint("SimpleDateFormat") SimpleDateFormat   formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date curDate =  new Date(System.currentTimeMillis());
+				//获取当前时间
+				String  str =  formatter.format(curDate);
+				File appDir1 = new File("data/data/com.example.webviewtest/SaveInternet/mht");//xxxx为手机本地生成的文件夹名//称，自定义
+				if (!appDir1.exists()) {
+					appDir1.mkdir();
+				}
+				webView.saveWebArchive(appDir1+"/"+str,false,null);
+				String local= "浏览器：网页已保存到data/data/com.example.webviewtest/SaveInternet目录下(html,mht)";
+				Toast.makeText(MainActivity.this,local,Toast.LENGTH_SHORT).show();
+				break;
+			case R.id.imageButton_NoPictureBrowsing:
+				//设置无图模式
+				if(!flag_isNoPictureBrowsing)
+				{
+					webView.getSettings().setBlockNetworkImage(true);
+				}
+				else
+				{
+					webView.getSettings().setBlockNetworkImage(false);
+				}
+				break;
 			case R.id.imageButton_Favourite:
 				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
 				startActivity(favouriteIntent);
@@ -374,8 +487,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
 				startActivity(historyIntent);
 
+
 		}
 	}
+
+	Runnable runnable = new Runnable(){
+		@Override
+		public void run() {
+			/**
+			 * 要执行的操作
+			 */
+			SaveHtml(NowUrl);
+			// 执行完毕后给handler发送一个空消息
+			handler.sendEmptyMessage(0);
+		}
+	};
+
+	private Handler handler = new Handler(new Handler.Callback() {
+
+		@Override
+		public boolean handleMessage(Message msg) {
+			return false;
+		}
+	});
 
 	@Override
 	protected void onRestart() {
@@ -421,7 +555,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		//System.out.println("123456");
 	}
-
 //	@Override
 //	public boolean onTouchEvent(MotionEvent event) {
 //		//继承了Activity的onTouchEvent方法，直接监听点击事件
