@@ -1,10 +1,10 @@
 package com.example.webviewtest;
 
-import static android.webkit.URLUtil.isHttpUrl;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -14,11 +14,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -33,10 +33,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private boolean flag_isSettingsVisible = false;
 	//设定一个flag表示现在是否处于无图模式
 	private boolean flag_isNoPictureBrowsing = false;
+	//设定一个flag表示现在是否处于全屏模式
+	private boolean flag_isFullScreen = false;
+	//设定一个flag表示现在是否处于旋转锁定模式
+	private boolean flag_isRotationLock = false;
 
 	public void SaveHtml(String str){
 		try
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		View settings = findViewById(R.id.constraintLayout_menu);
 		settings.setVisibility(View.INVISIBLE);
 
-		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
+		webView = (WebView) findViewById(R.id.webview_main);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
 		//绑定按钮点击事件
 		ImageButton btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
@@ -229,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					x1 = motionEvent.getX();
 					y1 = motionEvent.getY();
 				}
-
 				//手指离开
 				if (motionEvent.getAction() == MotionEvent.ACTION_UP)
 				{
@@ -321,9 +322,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	{
 		Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.anim_bottom_bar_gone);
 		view.startAnimation(animation);
-//		Animation animation =AnimationUtils.loadAnimation(MainActivity.this,R.anim.anim_bottom_bar_gone);
-//		view.startAnimation(animation);
-
 	}
 
 	@Override
@@ -444,8 +442,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					webView.getSettings().setBlockNetworkImage(false);
 				}
 				break;
-
-
+			case R.id.imageButton_FullScreen:
+				if(flag_isFullScreen==false)
+				{
+					//去掉最上面时间、电量等
+					this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					//把地下的地址栏也去掉
+					View settingsInFullScreen = findViewById(R.id.constraintLayout_menu);
+					settingsInFullScreen.setVisibility(View.INVISIBLE);
+					flag_isSettingsVisible = false;
+					View bar = findViewById(R.id.constraintLayout_bottom_bar);
+					animationBarGone(bar);
+					bar.setVisibility(View.INVISIBLE);
+					flag_isBarVisible = false;
+					flag_isFullScreen=true;
+				}
+				else
+				{
+					this.getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					flag_isFullScreen=false;
+				}
+				break;
+			case R.id.imageButton_RotationLock:
+				if(flag_isRotationLock==false)
+				{
+					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+					flag_isRotationLock=true;
+				}
+				else
+				{
+					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+					flag_isRotationLock=false;
+				}
+				break;
 		}
 	}
 
