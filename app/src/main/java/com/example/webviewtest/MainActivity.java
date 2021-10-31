@@ -532,8 +532,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				if(flag_isRotationLock==false)
 				{
 					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-0					flag_isRotationLock=true;
-0 				}
+					flag_isRotationLock=true;
+ 				}
 				else
 				{
 					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -589,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 	@Override
 	protected void onResume() {
-		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
+		webView = (WebView) findViewById(R.id.webview_main);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
 		//ContentValues cv = new ContentValues(3);
 		//System.out.println("url:"+webView.getUrl());
