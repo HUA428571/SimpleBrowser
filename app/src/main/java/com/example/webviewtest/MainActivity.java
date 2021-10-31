@@ -489,8 +489,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				if(flag_isRotationLock==false)
 				{
 					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-					flag_isRotationLock=true;
-				}
+0					flag_isRotationLock=true;
+0 				}
 				else
 				{
 					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
