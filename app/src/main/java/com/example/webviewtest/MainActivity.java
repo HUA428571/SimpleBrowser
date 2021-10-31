@@ -1,21 +1,18 @@
 package com.example.webviewtest;
 
-import static android.webkit.URLUtil.isHttpUrl;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.slice.SliceItem;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,28 +20,22 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.database.Cursor;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -52,10 +43,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 {
 
 	SQLiteDatabase db;
+	String [] res= {"菠菜宠物店1","菠菜宠物店2", "菠菜宠物店3", "菠菜宠物店4"};
+	int sum;
 	private WebView webView;
 	private long exitTime = 0;
 	public static final String TAG= "MainActivity";
 	String NowUrl= null;
+	private AutoCompleteTextView autoCompleteTextView;
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
@@ -117,7 +111,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		application app = (application) getApplication();
 		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
-		EditText editText_URL = findViewById(R.id.urlTextInput);
+		autoCompleteTextView = findViewById(R.id.urlTextInput);
+
+		ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
+		autoCompleteTextView.setAdapter(adapter);
 		//绑定按钮点击事件
 		ImageButton btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
 		btn_GO.setOnClickListener(this);
@@ -158,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		//加载主页
 		webView.loadUrl("https://"+getResources().getString(R.string.url_home));
-		editText_URL.setText(webView.getTitle());
+		autoCompleteTextView.setText(webView.getTitle());
 
 		//解决重定向导致网页无法访问以及返回键的问题
 		webView.setWebViewClient(new WebViewClient()
@@ -306,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 		//设置输入框
-		editText_URL.setOnFocusChangeListener(new View.OnFocusChangeListener()
+		autoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener()
 		{
 			@Override
 			public void onFocusChange(View view, boolean focus)
@@ -314,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				if(focus)
 				{
 					//显示当前网址
-					editText_URL.setText(webView.getUrl());
+					autoCompleteTextView.setText(webView.getUrl());
 //					//光标置于末尾
 //					//editText_URL.setSelection(editText_URL.getText().length());
 //					//显示选中
@@ -324,26 +321,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				else
 				{
 					//显示网站名
-					editText_URL.setText(webView.getTitle());
+					autoCompleteTextView.setText(webView.getTitle());
 				}
 			}
 		});
 
 		// 监听键盘回车搜索
-		editText_URL.setOnKeyListener(new View.OnKeyListener() {
+		autoCompleteTextView.setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
 					// 执行搜索
 					btn_GO.callOnClick();
-					editText_URL.clearFocus();
+					autoCompleteTextView.clearFocus();
 				}
 				return false;
 			}
 		});
 
+
+		//自动匹配
+
+
 	}
 
+	public void init(){
+		//创建数据库及数据表
+		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
+
+		Cursor cur=db.rawQuery("select * from test",null);
+		sum=cur.getCount();
+		res = new String[sum];
+		//String sUser=String.format("共有记录数量：%d:\n",sum);
+		for(int i=0;i<sum;i++) {
+			cur.moveToPosition(i);
+			res[i] = cur.getString(0);
+			//sUser += String.format("%s,%s\n", cur.getString(0), cur.getString(1));
+		}
+	}
 	private void animationBarVisible(View view)
 	{
 		Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.anim_bottpm_bar_visile);
@@ -464,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				if (!appDir1.exists()) {
 					appDir1.mkdir();
 				}
-				webView.saveWebArchive(appDir1+"/"+str,false,null);
+				webView.saveWebArchive(appDir1+"/"+str+".mht",false,null);
 				String local= "浏览器：网页已保存到data/data/com.example.webviewtest/SaveInternet目录下(html,mht)";
 				Toast.makeText(MainActivity.this,local,Toast.LENGTH_SHORT).show();
 				break;
