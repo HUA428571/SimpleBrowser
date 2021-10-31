@@ -32,4 +32,13 @@ public class application extends Application {
     void setUrl_from_history(String url){
         this.url_from_history = url;
     }
+
+    private int total_favourite_num;
+    void setTotal_favourite_num(int num){this.total_favourite_num = num;}
+    int getTotal_favourite_num(){return this.total_favourite_num;}
+
+    private int total_favourite_website_num;
+    void setTotal_favourite_website_num(int num){this.total_favourite_website_num = num;}
+    int getTotal_favourite_website_num(){return this.total_favourite_website_num;}
+
 }

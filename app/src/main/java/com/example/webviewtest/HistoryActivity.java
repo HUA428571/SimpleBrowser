@@ -26,6 +26,7 @@ public class HistoryActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("history");
         app = (application)getApplication();
         init();
         setContentView(R.layout.activity_history);
@@ -36,7 +37,6 @@ public class HistoryActivity extends AppCompatActivity  {
     }
 
     public void init(){
-        //创建数据库及数据表
         db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
 
             Cursor cur=db.rawQuery("select * from test",null);
