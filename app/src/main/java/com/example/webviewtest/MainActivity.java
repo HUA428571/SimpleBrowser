@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	ImageButton btn_GO,btn_Back,btn_GoForward,btn_Settings,btn_downLoad,btn_NoPictureBrowsing,btn_FullScreen,btn_RotationLock;
 	EditText editText_URL;
-	TextView text_FullScreen;
+	TextView text_FullScreen,text_NoPictureBrowsing;
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
@@ -350,6 +350,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		webView = (WebView) findViewById(R.id.webview_main);
 		editText_URL = findViewById(R.id.urlTextInput);
 		text_FullScreen = findViewById(R.id.textView_FullScreen);
+		text_NoPictureBrowsing=findViewById(R.id.textView_NoPictureBrowsing);
 
 		//绑定按钮点击事件
 		btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
@@ -493,17 +494,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				break;
 			case R.id.imageButton_NoPictureBrowsing:
 				//设置无图模式
-				if(!flag_isNoPictureBrowsing)
+				if(flag_isNoPictureBrowsing==false)
 				{
 					webView.getSettings().setBlockNetworkImage(true);
-					btn_FullScreen.setBackgroundResource(R.drawable.btn_picture);
-					text_FullScreen.setText(getResources().getString(R.string.imageButton_WithPictureBrowsing));
+					//btn_NoPictureBrowsing.setBackgroundResource(R.drawable.btn_picture);
+					text_NoPictureBrowsing.setText(getResources().getString(R.string.imageButton_WithPictureBrowsing));
+					flag_isNoPictureBrowsing=true;
 				}
 				else
 				{
 					webView.getSettings().setBlockNetworkImage(false);
-					btn_FullScreen.setBackgroundResource(R.drawable.btn_picture);
-					text_FullScreen.setText(getResources().getString(R.string.imageButton_NoPictureBrowsing));
+					//btn_NoPictureBrowsing.setBackgroundResource(R.drawable.btn_picture);
+					text_NoPictureBrowsing.setText(getResources().getString(R.string.imageButton_NoPictureBrowsing));
+					flag_isNoPictureBrowsing=false;
 				}
 				break;
 			case R.id.imageButton_FullScreen:
