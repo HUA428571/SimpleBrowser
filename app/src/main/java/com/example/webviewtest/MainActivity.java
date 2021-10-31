@@ -8,6 +8,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -26,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.database.Cursor;
 
@@ -36,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -52,12 +57,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private AutoCompleteTextView autoCompleteTextView;
 	application app;
 
+	ImageButton btn_GO,btn_Back,btn_GoForward,btn_Settings,btn_downLoad,btn_NoPictureBrowsing,btn_FullScreen,btn_RotationLock;
+	EditText editText_URL;
+	TextView text_FullScreen;
+
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
 	//设定一个flag表示现在设置窗口的显示状态
 	private boolean flag_isSettingsVisible = false;
 	//设定一个flag表示现在是否处于无图模式
 	private boolean flag_isNoPictureBrowsing = false;
+	//设定一个flag表示现在是否处于全屏模式
+	private boolean flag_isFullScreen = false;
+	//设定一个flag表示现在是否处于旋转锁定模式
+	private boolean flag_isRotationLock = false;
 
 	public void SaveHtml(String str){
 		try
@@ -113,29 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		View settings = findViewById(R.id.constraintLayout_menu);
 		settings.setVisibility(View.INVISIBLE);
 
-		application app = (application) getApplication();
-		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
-		autoCompleteTextView = findViewById(R.id.urlTextInput);
-
-		ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
-		autoCompleteTextView.setAdapter(adapter);
-		//绑定按钮点击事件
-		ImageButton btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
-		btn_GO.setOnClickListener(this);
-		ImageButton btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
-		btn_Back.setOnClickListener(this);
-		ImageButton btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
-		btn_GoForward.setOnClickListener(this);
-		ImageButton btn_Settings = (ImageButton) findViewById(R.id.imageButton_Settings);
-		btn_Settings.setOnClickListener(this);
-		ImageButton btn_downLoad= (ImageButton) findViewById(R.id.imageButton_Download);
-		btn_downLoad.setOnClickListener(this);
-		ImageButton btn_NoPictureBrowsing= (ImageButton) findViewById(R.id.imageButton_NoPictureBrowsing);
-		btn_NoPictureBrowsing.setOnClickListener(this);
-		ImageButton btn_FullScreen= (ImageButton) findViewById(R.id.imageButton_FullScreen);
-		btn_FullScreen.setOnClickListener(this);
-		ImageButton btn_RotationLock= (ImageButton) findViewById(R.id.imageButton_RotationLock);
-		btn_RotationLock.setOnClickListener(this);
+		//初始化控件
+		initView();
 
 		ImageButton Btn_Favourite = (ImageButton) findViewById(R.id.imageButton_Favourite);
 		Btn_Favourite.setOnClickListener(this);
@@ -264,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					x1 = motionEvent.getX();
 					y1 = motionEvent.getY();
 				}
-
 				//手指离开
 				if (motionEvent.getAction() == MotionEvent.ACTION_UP)
 				{
@@ -350,6 +341,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	}
 
+	private void initView()
+	{
+		webView = (WebView) findViewById(R.id.webview_main);
+		editText_URL = findViewById(R.id.urlTextInput);
+		text_FullScreen = findViewById(R.id.textView_FullScreen);
+		//绑定按钮点击事件
+		btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
+		btn_GO.setOnClickListener(this);
+		btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
+		btn_Back.setOnClickListener(this);
+		btn_GoForward = (ImageButton) findViewById(R.id.imageButton_Forward);
+		btn_GoForward.setOnClickListener(this);
+		btn_Settings = (ImageButton) findViewById(R.id.imageButton_Settings);
+		btn_Settings.setOnClickListener(this);
+		btn_downLoad= (ImageButton) findViewById(R.id.imageButton_Download);
+		btn_downLoad.setOnClickListener(this);
+		btn_NoPictureBrowsing= (ImageButton) findViewById(R.id.imageButton_NoPictureBrowsing);
+		btn_NoPictureBrowsing.setOnClickListener(this);
+		btn_FullScreen= (ImageButton) findViewById(R.id.imageButton_FullScreen);
+		btn_FullScreen.setOnClickListener(this);
+		btn_RotationLock= (ImageButton) findViewById(R.id.imageButton_RotationLock);
+		btn_RotationLock.setOnClickListener(this);
+	}
+
 	private void animationBarVisible(View view)
 	{
 		Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.anim_bottpm_bar_visile);
@@ -360,9 +375,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	{
 		Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.anim_bottom_bar_gone);
 		view.startAnimation(animation);
-//		Animation animation =AnimationUtils.loadAnimation(MainActivity.this,R.anim.anim_bottom_bar_gone);
-//		view.startAnimation(animation);
-
 	}
 
 	@Override
@@ -479,10 +491,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				if(!flag_isNoPictureBrowsing)
 				{
 					webView.getSettings().setBlockNetworkImage(true);
+					btn_FullScreen.setBackgroundResource(R.drawable.btn_picture);
+					text_FullScreen.setText(getResources().getString(R.string.imageButton_WithPictureBrowsing));
 				}
 				else
 				{
 					webView.getSettings().setBlockNetworkImage(false);
+					btn_FullScreen.setBackgroundResource(R.drawable.btn_picture);
+					text_FullScreen.setText(getResources().getString(R.string.imageButton_NoPictureBrowsing));
+				}
+				break;
+			case R.id.imageButton_FullScreen:
+				if(flag_isFullScreen==false)
+				{
+					//去掉最上面时间、电量等
+					this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					//把地下的地址栏也去掉
+					View settingsInFullScreen = findViewById(R.id.constraintLayout_menu);
+					settingsInFullScreen.setVisibility(View.INVISIBLE);
+					flag_isSettingsVisible = false;
+					View bar = findViewById(R.id.constraintLayout_bottom_bar);
+					animationBarGone(bar);
+					bar.setVisibility(View.INVISIBLE);
+					flag_isBarVisible = false;
+					flag_isFullScreen=true;
+					//最后我们将图标改成退出全屏的样式
+					btn_FullScreen.setBackgroundResource(R.mipmap.btn_no_full_screen);
+					text_FullScreen.setText(getResources().getString(R.string.imageButton_NoFullScreen));
+				}
+				else
+				{
+					this.getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					flag_isFullScreen=false;
+					//最后我们将图标改成进入全屏的样式
+					btn_FullScreen.setBackgroundResource(R.mipmap.btn_full_screen);
+					text_FullScreen.setText(getResources().getString(R.string.imageButton_FullScreen));
+				}
+				break;
+			case R.id.imageButton_RotationLock:
+				if(flag_isRotationLock==false)
+				{
+					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+					flag_isRotationLock=true;
+				}
+				else
+				{
+					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+					flag_isRotationLock=false;
 				}
 				break;
 			case R.id.imageButton_Favourite:
@@ -504,8 +559,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
 				startActivity(historyIntent);
 				break;
-
-
 		}
 	}
 
