@@ -13,7 +13,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WebViewTest"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".SelectFavouriteActivity"
+            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".FavouriteWebsiteListActivity"-->
+<!--            android:exported="false" />-->
+        <activity
+            android:name=".CheckFavouriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddFavouriteActivity"
+            android:exported="false" />
         <activity
             android:name=".HistoryActivity"
             android:exported="false" />

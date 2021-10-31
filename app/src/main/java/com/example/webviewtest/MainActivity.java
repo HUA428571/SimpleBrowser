@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private long exitTime = 0;
 	public static final String TAG= "MainActivity";
 	String NowUrl= null;
+	application app;
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
@@ -143,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//隐藏标题栏
 		getSupportActionBar().hide();
 
+		app = (application) getApplication();
+		app.setTotal_favourite_num(0);
+
 		//设置菜单栏的隐藏
 		View settings = findViewById(R.id.constraintLayout_menu);
 		settings.setVisibility(View.INVISIBLE);
@@ -173,10 +177,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
 		Btn_History.setOnClickListener(this);
 
-
+		//创建三张表：历史记录(test)、收藏的页面(favouriteWebsite)、收藏夹内文件夹(favourite)
 		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
-		String sql="CREATE TABLE IF NOT EXISTS test (title VARCHAR(32),url VARCHAR(32))";
-		db.execSQL(sql);
+		String createHistoryTable="CREATE TABLE IF NOT EXISTS test (title VARCHAR(32),url VARCHAR(32))";
+		String createFavouriteWebsiteTable="CREATE TABLE IF NOT EXISTS favouriteWebsite (id INT,title VARCHAR(32),url VARCHAR(32),favouriteId INT)";
+		String createFavouriteTable="CREATE TABLE IF NOT EXISTS favourite (id INT,name VARCHAR(32))";
+		db.execSQL(createHistoryTable);
+		db.execSQL(createFavouriteWebsiteTable);
+		db.execSQL(createFavouriteTable);
+
 		// 启用 js 功能
 		webView.getSettings().setJavaScriptEnabled(true);
 		// 支持缩放，默认为true。是下面那个的前提。
@@ -216,9 +225,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				System.out.println("sum:"+sum);
 				if(sum==0){
 					cv.put("url",url);
-					cv.put("title","test");
+					cv.put("title",view.getTitle());
 					db.insert("test", null,cv);
-					System.out.println("111111111111111111");
+					//System.out.println("111111111111111111");
 				}
 				else{
 					for(int i=0;i<sum;i++) {
@@ -227,11 +236,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						System.out.println("cur:"+cur.getString(1));
 						if(url.equals(cur.getString(1)))
 						{
-							System.out.println("151566116516561");
+							//System.out.println("151566116516561");
 							db.execSQL("DElETE  FROM test where url= ?", new String[]{url});
 							//db.delete("test","url= ? ",new String[] {url});
 							cv.put("url",url);
-							cv.put("title","test");
+							cv.put("title",view.getTitle());
 							db.insert("test", null,cv);
 							//db.close();
 							break;
@@ -239,9 +248,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						if(i==sum-1)
 						{
 							cv.put("url",url);
-							cv.put("title","test");
+							cv.put("title",view.getTitle());
 							db.insert("test", null,cv);
-							System.out.println("111111111111111111");
+							//System.out.println("111111111111111111");
 						}
 
 					}
@@ -512,13 +521,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				}
 				break;
 			case R.id.imageButton_Favourite:
+				ContentValues FavouriteCv = new ContentValues(4);
+				//int totalFavouriteWebsiteNum = app.getTotal_favourite_website_num()+1;
+				//System.out.println("geturl:"+totalFavouriteWebsiteNum);
+				//System.out.println("gettitle:"+webView.getTitle());
+				app.setTotal_favourite_website_num(app.getTotal_favourite_website_num()+1);
+				FavouriteCv.put("id",app.getTotal_favourite_website_num());
+				FavouriteCv.put("title",webView.getTitle());
+				FavouriteCv.put("url",webView.getUrl());
+				FavouriteCv.put("favouriteId",0);
+				db.insert("favouriteWebsite", null,FavouriteCv);
 				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
 				startActivity(favouriteIntent);
+				break;
 				//setContentView(R.layout.activity_favourite);
 			case R.id.imageButton_History:
 				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
 				startActivity(historyIntent);
-
+				break;
 
 		}
 	}
@@ -555,7 +575,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	protected void onResume() {
 		webView = (WebView) findViewById(R.id.web_view_ButtomBar);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
-		//ContentValues cv = new ContentValues(2);
+		//ContentValues cv = new ContentValues(3);
 		//System.out.println("url:"+webView.getUrl());
 		//cv.put("url",webView.getUrl());
 		//cv.put("title",webView.getTitle());
