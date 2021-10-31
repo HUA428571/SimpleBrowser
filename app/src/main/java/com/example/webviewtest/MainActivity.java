@@ -126,6 +126,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		View settings = findViewById(R.id.constraintLayout_menu);
 		settings.setVisibility(View.INVISIBLE);
 
+		autoCompleteTextView = findViewById(R.id.urlTextInput);
+		ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
+		autoCompleteTextView.setAdapter(adapter);
+
 		//初始化控件
 		initView();
 
@@ -346,6 +350,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		webView = (WebView) findViewById(R.id.webview_main);
 		editText_URL = findViewById(R.id.urlTextInput);
 		text_FullScreen = findViewById(R.id.textView_FullScreen);
+
 		//绑定按钮点击事件
 		btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
 		btn_GO.setOnClickListener(this);
