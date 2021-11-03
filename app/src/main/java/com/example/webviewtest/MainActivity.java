@@ -39,27 +39,30 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
 
 	SQLiteDatabase db;
-	String [] res= {"菠菜宠物店1","菠菜宠物店2", "菠菜宠物店3", "菠菜宠物店4"};
+	String [] res= null;//获取历史记录以进行自动匹配的数组
 	int sum;
 	private WebView webView;
 	private long exitTime = 0;
 	public static final String TAG= "MainActivity";
 	String NowUrl= null;
-	private AutoCompleteTextView autoCompleteTextView;
 	application app;
 
 	ImageButton btn_GO,btn_Back,btn_GoForward,btn_Settings,btn_downLoad,btn_NoPictureBrowsing,btn_FullScreen,btn_RotationLock;
-	EditText editText_URL;
+	//EditText editText_URL;
 	TextView text_FullScreen,text_NoPictureBrowsing;
 
 	//设定一个flag表示现在底边栏的显示状态
@@ -73,13 +76,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	//设定一个flag表示现在是否处于旋转锁定模式
 	private boolean flag_isRotationLock = false;
 
+	//保存网页为html文件（无样式）
 	public void SaveHtml(String str){
 		try
 		{
 			URL url=null;
 			url=new URL(str);
 			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
-			File appDir = new File("data/data/com.example.webviewtest/SaveInternet/html");//xxxx为手机本地生成的文件夹名//称，自定义
+			//新建文件夹
+			File appDir = new File("data/data/com.example.webviewtest/SaveInternet/html");
 			if (!appDir.exists()) {
 				appDir.mkdir();
 			}
@@ -87,13 +92,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			Date curDate =  new Date(System.currentTimeMillis());
 			//获取当前时间
 			String  str0 =  formatter.format(curDate);
-			//当前时间来命名图片,这样就不会覆盖之前的图片,如果此值固定就只有一张图片，以前的会被替换；
+			//以当前时间命名图片
 			String fileName = str0 + ".html";
+			//新建html文件
 			File filePath = new File(appDir,fileName);
 			if (!filePath.exists()) {
 				Log.d(TAG,"file is not exist");
 				filePath.createNewFile();
 			}
+			//向文件内写入网页数据
 			FileWriter fin=new FileWriter(filePath);
 			String line;
 			while((line=in.readLine())!=null)
@@ -111,6 +118,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 	}
 
+	//String [] title;
+	//获取
+	public void autoX(){
+		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
+
+		Cursor cur=db.rawQuery("select * from test",null);
+		sum=cur.getCount();
+		res = new String[sum];
+		//String sUser=String.format("共有记录数量：%d:\n",sum);
+		for(int i=0;i<sum;i++) {
+			cur.moveToPosition(i);
+			res[i] = cur.getString(0);
+			//sUser += String.format("%s,%s\n", cur.getString(0), cur.getString(1));
+		}
+	}
 	@SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled"})
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -127,9 +149,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		View settings = findViewById(R.id.constraintLayout_menu);
 		settings.setVisibility(View.INVISIBLE);
 
-		autoCompleteTextView = findViewById(R.id.urlTextInput);
-		ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
-		autoCompleteTextView.setAdapter(adapter);
 
 		//初始化控件
 		initView();
@@ -149,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		db.execSQL(createHistoryTable);
 		db.execSQL(createFavouriteWebsiteTable);
 		db.execSQL(createFavouriteTable);
+		AutoCompleteTextView autoCompleteTextView = findViewById(R.id.urlTextInput);
 
 		// 启用 js 功能
 		webView.getSettings().setJavaScriptEnabled(true);
@@ -313,8 +333,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			{
 				if(focus)
 				{
+
+					autoX();
+					ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
+					autoCompleteTextView.setAdapter(adapter);
 					//显示当前网址
-					autoCompleteTextView.setText(webView.getUrl());
+					autoCompleteTextView.setText(webView.getUrl());//,TextView.BufferType.EDITABLE
+					//autoCompleteTextView.setSelectAllOnFocus(true);
 //					//光标置于末尾
 //					//editText_URL.setSelection(editText_URL.getText().length());
 //					//显示选中
@@ -351,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private void initView()
 	{
 		webView = (WebView) findViewById(R.id.webview_main);
-		editText_URL = findViewById(R.id.urlTextInput);
+		//editText_URL = findViewById(R.id.urlTextInput);
 		text_FullScreen = findViewById(R.id.textView_FullScreen);
 		text_NoPictureBrowsing=findViewById(R.id.textView_NoPictureBrowsing);
 
@@ -463,6 +488,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //					}
 //					else
 //					{
+					if (!isHttpUrl(urlInput)) {
+						// 不是网址，加载搜索引擎处理
+						try {
+							// URL 编码
+							urlInput = URLEncoder.encode(urlInput, "utf-8");
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+						urlInput = "www.baidu.com/s?wd=" + urlInput + "&ie=UTF-8";
+					}
 					if(!(urlInput.startsWith("http://") || urlInput.startsWith("https://")))
 						urlInput = "http://" + urlInput;
 //					}
@@ -636,6 +671,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 		//System.out.println("123456");
+	}
+
+	public static boolean isHttpUrl(String urls) {
+		boolean isUrl;
+		// 判断是否是网址的正则表达式
+		String regex = "([a-z0-9]+[.])|(www.)"
+				+ "\\w+[.|\\/]([a-z0-9]{0,})?[[.]([a-z0-9]{0,})]+((/[\\S&&[^,;\u4E00-\u9FA5]]+)+)?([.][a-z0-9]{0,}+|/?)";
+
+		Pattern pat = Pattern.compile(regex.trim());
+		Matcher mat = pat.matcher(urls.trim());
+		isUrl = mat.matches();
+		return isUrl;
 	}
 //	@Override
 //	public boolean onTouchEvent(MotionEvent event) {

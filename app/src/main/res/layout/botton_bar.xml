@@ -46,7 +46,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <AutoCompleteTextView
-                android:completionThreshold="3"
+                android:completionThreshold="1"
                 android:id="@+id/urlTextInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
