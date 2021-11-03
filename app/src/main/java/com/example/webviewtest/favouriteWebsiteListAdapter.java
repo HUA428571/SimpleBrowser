@@ -17,18 +17,20 @@ import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.webviewtest.application;
 
+import java.util.List;
+
 public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favouriteWebsiteListAdapter.LinearViewHolder>{
 
     private Context mContext;
-    String[] favouriteWebsiteTitle = {"菠菜宠物店1","菠菜宠物店2", "菠菜宠物店3", "菠菜宠物店4"};
-    String[] favouriteWebsiteUrl = {"重庆市北碚区天生路1号","重庆市北碚区天生路2号","重庆市北碚区天生路3号","重庆市北碚区天生路4号"};
-    int[] id;
+    List<String> favouriteWebsiteTitle ;
+    List<String> favouriteWebsiteUrl;
+    List<Integer> id;
     //int[] favouriteId;
     int sum;
     int fromWebsiteId;
     SQLiteDatabase db;
 
-    public favouriteWebsiteListAdapter(Context context,int sum,String[] favouriteWebsiteTitle,String[] favouriteWebsiteUrl,int[] id,SQLiteDatabase db){
+    public favouriteWebsiteListAdapter(Context context, int sum, List<String> favouriteWebsiteTitle, List<String> favouriteWebsiteUrl, List<Integer> id, SQLiteDatabase db){
         this.mContext=context;
         this.sum = sum;
         this.favouriteWebsiteTitle = favouriteWebsiteTitle;
@@ -48,17 +50,46 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
     //绑定ViewHolder
     //public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     public void onBindViewHolder(favouriteWebsiteListAdapter.LinearViewHolder holder, final int position) {
-            int thisId = this.id[position];
+        int thisId;
 
-            holder.favouriteWebsiteItemTitle.setText(favouriteWebsiteTitle[position]);
-            holder.favouriteWebsiteItemUrl.setText(favouriteWebsiteUrl[position]);
+        if(this.id.size()>0&&this.id!=null)
+        {
+             thisId = this.id.get(position);
+        }
+        else{
+            thisId = 0;
+        }
+
+
+
+        //System.out.println("idtoput:"+id[position]);
+
+        //System.out.println("titletoput:"+favouriteWebsiteTitle[position]);
+        //System.out.println("urltoput:"+favouriteWebsiteUrl[position]);
+        //System.out.println("favouriteid:"+favouriteWebsiteCur.getInt(3));
+        if(this.favouriteWebsiteTitle.size()>0&&this.favouriteWebsiteTitle!=null)
+        {
+            holder.favouriteWebsiteItemTitle.setText(this.favouriteWebsiteTitle.get(position));
+        }
+        if(this.favouriteWebsiteUrl.size()>0&&this.favouriteWebsiteUrl!=null)
+        {
+            holder.favouriteWebsiteItemUrl.setText(this.favouriteWebsiteUrl.get(position));
+        }
+
+
+
 
             holder.deleteFavouriteWebsite.setOnClickListener(new View.OnClickListener() {    //删除网站
             @Override
             public void onClick(View view) {
-                db.execSQL("DElETE  FROM favouriteWebsite where id= ?", new Object[]{thisId});
-                //db.execSQL("DElETE  FROM favouriteWebsite where favouriteId= ?", new Object[]{thisFavouriteId});
-                ((Activity) mContext).recreate();
+                if(thisId!=0)
+                {
+                    db.execSQL("DElETE  FROM favouriteWebsite where id= ?", new Object[]{thisId});
+                    //System.out.println(thisId);
+                    //db.execSQL("DElETE  FROM favouriteWebsite where favouriteId= ?", new Object[]{thisFavouriteId});
+                    ((Activity) mContext).recreate();
+                }
+
             }
         });
 
@@ -67,12 +98,26 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
             public void onClick(View view) {
                 ((Activity) mContext).setContentView(R.layout.edit_favourite_website);
                 Button editFavouriteWebsiteConfirm = (Button) ((Activity) mContext).findViewById(R.id.editFavouriteWebsite_confirm);
+                Button editFavouriteWebsiteCancel = (Button) ((Activity) mContext).findViewById(R.id.editFavouriteWebsite_cancel);
                 EditText editFavouriteWebsiteName = (EditText) ((Activity) mContext).findViewById(R.id.editFavouriteWebsite_name);
                 EditText editFavouriteWebsiteUrl = (EditText) ((Activity) mContext).findViewById(R.id.editFavouriteWebsite_url);
+
+                editFavouriteWebsiteName.setText(holder.favouriteWebsiteItemTitle.getText());
+                editFavouriteWebsiteUrl.setText(holder.favouriteWebsiteItemUrl.getText());
+
                 editFavouriteWebsiteConfirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         db.execSQL("Update favouriteWebsite set title= ?,url=?  where id= ? ", new Object[]{editFavouriteWebsiteName.getText(),editFavouriteWebsiteUrl.getText(), thisId } );
+                        ((Activity) mContext).recreate();
+                    }
+                });
+
+                editFavouriteWebsiteCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //db.execSQL("Update favouriteWebsite set title= ?,url=?  where id= ? ", new Object[]{editFavouriteWebsiteName.getText(),editFavouriteWebsiteUrl.getText(), thisId } );
+                        //((Activity) mContext).setContentView(R.layout.activity_favourite);
                         ((Activity) mContext).recreate();
                     }
                 });
@@ -111,7 +156,7 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
             favouriteWebsiteItem = itemView.findViewById(R.id.favouriteWebsite_item);
             favouriteWebsiteItemTitle = itemView.findViewById(R.id.favouriteWebsite_item_title);
             favouriteWebsiteItemUrl = itemView.findViewById(R.id.favouriteWebsite_item_url);
-            favouriteWebsiteItemBody = itemView.findViewById(R.id.favourite_item_body);
+            favouriteWebsiteItemBody = itemView.findViewById(R.id.favouriteWebsite_item_body);
             deleteFavouriteWebsite = itemView.findViewById(R.id.delete_favouriteWebsite);
             editFavouriteWebsite = itemView.findViewById(R.id.edit_favouriteWebsite);
             moveFavouriteWebsite = itemView.findViewById(R.id.move_favouriteWebsite);

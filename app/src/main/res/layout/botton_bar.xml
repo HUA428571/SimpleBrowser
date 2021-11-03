@@ -87,6 +87,12 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+        <Button
+            android:id="@+id/test_favourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="收藏" />
+
         <ImageButton
             android:id="@+id/imageButton_Back"
             android:layout_width="40dp"

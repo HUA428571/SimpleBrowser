@@ -65,11 +65,21 @@ public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAda
 
                 ((Activity) mContext).setContentView(R.layout.edit_favourite);
                 Button editFavouriteConfirm = (Button) ((Activity) mContext).findViewById(R.id.editFavourite_confirm);
+                Button editFavouriteCancel = (Button) ((Activity) mContext).findViewById(R.id.editFavourite_cancel);
                 EditText editFavouriteName = (EditText) ((Activity) mContext).findViewById(R.id.editFavourite_name);
+                editFavouriteName.setText(holder.favouriteItemTitle.getText());
                 editFavouriteConfirm.setOnClickListener(new View.OnClickListener() {    //修改文件夹名称
                     @Override
                     public void onClick(View view) {
                         db.execSQL("Update favourite set name= ?  where id= ? ", new Object[]{editFavouriteName.getText(), thisFavouriteId } );
+                        ((Activity) mContext).recreate();
+                    }
+                });
+
+                editFavouriteCancel.setOnClickListener(new View.OnClickListener() {    //修改文件夹名称
+                    @Override
+                    public void onClick(View view) {
+                        //db.execSQL("Update favourite set name= ?  where id= ? ", new Object[]{editFavouriteName.getText(), thisFavouriteId } );
                         ((Activity) mContext).recreate();
                     }
                 });
@@ -98,7 +108,7 @@ public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAda
 
     class LinearViewHolder extends RecyclerView.ViewHolder {
         //找到组件
-        private TextView favouriteItemTitle,favouriteItemUrl;
+        private TextView favouriteItemTitle;
         private LinearLayout favouriteItem;
         private Button deleteFavourite,editFavourite,editFavouriteConfirm;
         private EditText editFavouriteName;
@@ -109,7 +119,7 @@ public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAda
             super(itemView);
             favouriteItem = itemView.findViewById(R.id.favourite_item);
             favouriteItemTitle = itemView.findViewById(R.id.favourite_item_title);
-            favouriteItemUrl = itemView.findViewById(R.id.favourite_item_url);
+            //favouriteItemUrl = itemView.findViewById(R.id.favourite_item_url);
             deleteFavourite = itemView.findViewById(R.id.delete_favourite);
             editFavourite = itemView.findViewById(R.id.edit_favourite);
             editFavouriteName = itemView.findViewById(R.id.editFavourite_name);

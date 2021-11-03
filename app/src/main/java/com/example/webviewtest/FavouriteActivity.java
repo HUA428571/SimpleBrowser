@@ -19,65 +19,65 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.webviewtest.application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FavouriteActivity extends AppCompatActivity implements View.OnClickListener  {
 
     SQLiteDatabase db;
     int sum;
     int favouriteId;
 
-    int[] id;
-    String[] title;
-    String[] url;
+    List<Integer> id;
+    List<String> title;
+    List<String> url;
     int[] favouriteWebsiteId;
 
     //String[] favouriteName;
     //int[] favouriteId;
 
-    private RecyclerView rv_favouriteWebsiteList;
+     RecyclerView rv_favouriteWebsiteList;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         favouriteId=getIntent().getIntExtra("favouriteId",0);
-        System.out.println("favouriteId:"+favouriteId);
-        init();
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_favourite);
+        //System.out.println("favouriteId:"+favouriteId);
+        //init();
+        //getSupportActionBar().hide();
+        //setContentView(R.layout.activity_favourite);
 
-        Button addFavourite = (Button) findViewById(R.id.addFavourite);
-        //Button addFavourite_confirm = (Button) findViewById(R.id.addFavourite_confirm);
-        //EditText addFavourite_name = (EditText) findViewById(R.id.addFavourite_name);
-        addFavourite.setOnClickListener(this);
-        //addFavourite_confirm.setOnClickListener(this);
+        //Button addFavourite = (Button) findViewById(R.id.addFavourite);
+        //addFavourite.setOnClickListener(this);
 
-        rv_favouriteWebsiteList = findViewById(R.id.favouriteWebsiteList);
-        rv_favouriteWebsiteList.setLayoutManager(new LinearLayoutManager(FavouriteActivity.this));
-        //rv_favouriteList.setAdapter(new favouriteListAdapter(FavouriteActivity.this,this.favouriteSum,this.favouriteName,this.favouriteId));
-        rv_favouriteWebsiteList.setAdapter(new favouriteWebsiteListAdapter(FavouriteActivity.this,this.sum,this.title,this.url,this.id,this.db));
+        //rv_favouriteWebsiteList = findViewById(R.id.favouriteWebsiteList);
+        //rv_favouriteWebsiteList.setLayoutManager(new LinearLayoutManager(FavouriteActivity.this));
+        //rv_favouriteWebsiteList.setAdapter(new favouriteWebsiteListAdapter(FavouriteActivity.this,this.sum,this.title,this.url,this.id,this.db));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //webView.loadUrl(app.getUrl_from_favourite());
-        init();
-        getSupportActionBar().hide();
+        System.out.println("resume");
         setContentView(R.layout.activity_favourite);
+        getSupportActionBar().hide();
+        init();
+
+
+        //System.out.println("idtoput:"+this.id[0]);
+
+        //System.out.println("titletoput:"+this.title[0]);
+        //System.out.println("urltoput:"+this.url[0]);
+        //System.out.println("favouriteid:"+favouriteWebsiteCur.getInt(3));
 
         rv_favouriteWebsiteList = findViewById(R.id.favouriteWebsiteList);
         rv_favouriteWebsiteList.setLayoutManager(new LinearLayoutManager(FavouriteActivity.this));
-        //rv_favouriteList.setAdapter(new favouriteListAdapter(FavouriteActivity.this,this.favouriteSum,this.favouriteName,this.favouriteId));
-
-        //rv_favouriteList.setLayoutManager(new LinearLayoutManager(FavouriteActivity.this));
         rv_favouriteWebsiteList.setAdapter(new favouriteWebsiteListAdapter(FavouriteActivity.this,this.sum,this.title,this.url,this.id,this.db));
         Button addFavourite = (Button) findViewById(R.id.addFavourite);
         Button checkFavourite = (Button) findViewById(R.id.checkFavourite);
-        //Button addFavourite_confirm = (Button) findViewById(R.id.addFavourite_confirm);
-        //EditText addFavourite_name = (EditText) findViewById(R.id.addFavourite_name);
         addFavourite.setOnClickListener(this);
         checkFavourite.setOnClickListener(this);
-        //addFavourite_confirm.setOnClickListener(this);
     }
 
     public void init(){
@@ -89,35 +89,41 @@ public class FavouriteActivity extends AppCompatActivity implements View.OnClick
         int FavouriteWebsiteSum=favouriteWebsiteCur.getCount();
         //favouriteSum = favouriteCur.getCount();
 
-        title = new String[FavouriteWebsiteSum];
-        url = new String[FavouriteWebsiteSum];
-        favouriteWebsiteId = new int[FavouriteWebsiteSum];
-        id = new int[FavouriteWebsiteSum];
+
+        this.title = new ArrayList<>();
+        this.url = new ArrayList<>();
+        //favouriteWebsiteId = new int[FavouriteWebsiteSum];
+        this.id = new ArrayList<>();
 
         //favouriteName = new String[favouriteSum];
         //favouriteId = new int[favouriteSum];
 
         for(int i=0;i<FavouriteWebsiteSum;i++) {
             favouriteWebsiteCur.moveToPosition(i);
-            System.out.println("id:"+ favouriteWebsiteCur.getInt(0));
-            System.out.println("id:"+ favouriteWebsiteCur.getInt(3));
+            //System.out.println("id:"+ favouriteWebsiteCur.getInt(0));
+            //System.out.println("id:"+ favouriteWebsiteCur.getInt(3));
             if(favouriteWebsiteCur.getInt(3)==favouriteId)
             {
-                //System.out.println("correct");
-                id[i] = favouriteWebsiteCur.getInt(0);
-                title[i] = favouriteWebsiteCur.getString(1);
-                url[i] = favouriteWebsiteCur.getString(2);
-                favouriteWebsiteId[i] = favouriteWebsiteCur.getInt(3);
+
+                //System.out.println("idtoput:"+favouriteWebsiteCur.getInt(0));
+
+                //System.out.println("titletoput:"+favouriteWebsiteCur.getString(1));
+                //System.out.println("urltoput:"+favouriteWebsiteCur.getString(2));
+                //System.out.println("favouriteid:"+favouriteWebsiteCur.getInt(3));
+
+
+                this.id.add(favouriteWebsiteCur.getInt(0));
+                this.title.add(favouriteWebsiteCur.getString(1));
+                this.url.add(favouriteWebsiteCur.getString(2));
+                //favouriteWebsiteId[i] = favouriteWebsiteCur.getInt(3);
+
+                //System.out.println("idtoput:"+this.id[i]);
+                //System.out.println("titletoput:"+this.title[i]);
+                //System.out.println("urltoput:"+this.url[i]);
                 sum++;
             }
 
         }
-//        for(int i=0;i<favouriteSum;i++) {
-//            favouriteCur.moveToPosition(i);
-//            //System.out.println("id:"+favouriteWebsitecCur.getInt(2));
-//            //favouriteName[i] = favouriteCur.getString(1);
-//            //favouriteId[i] = favouriteCur.getInt(0);
-//        }
     }
 
     @SuppressLint("NonConstantResourceId")

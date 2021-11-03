@@ -29,4 +29,11 @@
         android:layout_gravity="right"
         android:layout_weight="1"
         android:text="确定" />
+
+    <Button
+        android:id="@+id/editFavouriteWebsite_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="返回" />
 </LinearLayout>

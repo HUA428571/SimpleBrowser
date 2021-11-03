@@ -27,6 +27,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -137,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		Btn_Favourite.setOnClickListener(this);
 		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
 		Btn_History.setOnClickListener(this);
+		Button Btn_TestFavourite = (Button) findViewById(R.id.test_favourite);
+		Btn_TestFavourite.setOnClickListener(this);
 
 		//创建三张表：历史记录(test)、收藏的页面(favouriteWebsite)、收藏夹内文件夹(favourite)
 		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
@@ -160,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		//加载主页
 		webView.loadUrl("https://"+getResources().getString(R.string.url_home));
-		autoCompleteTextView.setText(webView.getTitle());
+		autoCompleteTextView.setText(webView.getUrl());
 
 		//解决重定向导致网页无法访问以及返回键的问题
 		webView.setWebViewClient(new WebViewClient()
@@ -549,6 +552,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				}
 				break;
 			case R.id.imageButton_Favourite:
+
+				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
+				startActivity(favouriteIntent);
+				break;
+				//setContentView(R.layout.activity_favourite);
+			case R.id.imageButton_History:
+				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
+				startActivity(historyIntent);
+				break;
+			case R.id.test_favourite:
 				ContentValues FavouriteCv = new ContentValues(4);
 				//int totalFavouriteWebsiteNum = app.getTotal_favourite_website_num()+1;
 				//System.out.println("geturl:"+totalFavouriteWebsiteNum);
@@ -559,14 +572,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				FavouriteCv.put("url",webView.getUrl());
 				FavouriteCv.put("favouriteId",0);
 				db.insert("favouriteWebsite", null,FavouriteCv);
-				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
-				startActivity(favouriteIntent);
-				break;
-				//setContentView(R.layout.activity_favourite);
-			case R.id.imageButton_History:
-				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
-				startActivity(historyIntent);
-				break;
+				//System.out.println("titletoinsert:"+webView.getTitle());
+				Toast.makeText(MainActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -597,14 +604,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 	@Override
 	protected void onResume() {
+		super.onResume();
 		webView = (WebView) findViewById(R.id.webview_main);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
-		//ContentValues cv = new ContentValues(3);
-		//System.out.println("url:"+webView.getUrl());
-		//cv.put("url",webView.getUrl());
-		//cv.put("title",webView.getTitle());
-		//db.insert("test", null,cv);
-		super.onResume();
+
 		application app = (application) getApplication();
 
 		if(app.getUrl_from_favourite()=="")
