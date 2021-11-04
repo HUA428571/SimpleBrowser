@@ -87,11 +87,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <Button
-            android:id="@+id/test_favourite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="收藏" />
 
         <ImageButton
             android:id="@+id/imageButton_Back"
@@ -129,8 +124,21 @@
             android:scaleX="0.6"
             android:scaleY="0.6"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton_Favourite"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_AddFavourite"
             app:layout_constraintStart_toEndOf="@+id/imageButton_Forward" />
+
+        <ImageButton
+            android:id="@+id/imageButton_AddFavourite"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/btn_settings"
+            android:src="@drawable/ripple_item_normal"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_Favourite"
+            app:layout_constraintStart_toEndOf="@+id/imageButton_History" />
 
         <ImageButton
             android:id="@+id/imageButton_Favourite"
@@ -143,7 +151,7 @@
             android:scaleY="0.6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageButton_Settings"
-            app:layout_constraintStart_toEndOf="@+id/imageButton_History" />
+            app:layout_constraintStart_toEndOf="@+id/imageButton_AddFavourite" />
 
         <ImageButton
             android:id="@+id/imageButton_Settings"

@@ -7,14 +7,26 @@
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/drawable/circle_rect_shape.xml" value="0.4197916666666667" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/drawable/style_bottom_bar.xml" value="0.4197916666666667" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/drawable/style_input_url.xml" value="0.2755208333333333" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_add_favourite.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_check_favourite.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_favourite.xml" value="0.259375" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_fragent_test.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_history.xml" value="0.259375" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_main.xml" value="0.4" />
-        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/botton_bar.xml" value="0.12" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/activity_select_favourite.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/botton_bar.xml" value="0.264" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/edit_favourite.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/edit_favourite_website.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/edit_favourite_website_item.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/favourite_item.xml" value="0.259375" />
+        <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/favourite_website_item.xml" value="0.259375" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/fragment_blank__bar.xml" value="0.4008152173913043" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/fragment_bottom_bar.xml" value="0.264" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/history_item.xml" value="0.259375" />
         <entry key="..\:/Users/huacl/OneDrive/NJUPT/Codes/Android_Studio_2021_Class/WebViewTest/app/src/main/res/layout/select_favourite_item.xml" value="0.259375" />
-        <entry key="..\:/git_box/WebViewTest/app/src/main/res/layout/botton_bar.xml" value="0.1" />
+        <entry key="..\:/git_box/WebViewTest/app/src/main/res/drawable/ripple_item_normal.xml" value="0.2546875" />
+        <entry key="..\:/git_box/WebViewTest/app/src/main/res/drawable/style_bottom_bar.xml" value="0.26564102564102565" />
+        <entry key="..\:/git_box/WebViewTest/app/src/main/res/layout/botton_bar.xml" value="0.264" />
       </map>
     </option>
   </component>

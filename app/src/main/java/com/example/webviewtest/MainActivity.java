@@ -1,19 +1,28 @@
 package com.example.webviewtest;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.slice.SliceItem;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -48,7 +57,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
 
@@ -60,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public static final String TAG= "MainActivity";
 	String NowUrl= null;
 	application app;
+	private AlertDialog mDialog;
+
 
 	ImageButton btn_GO,btn_Back,btn_GoForward,btn_Settings,btn_downLoad,btn_NoPictureBrowsing,btn_FullScreen,btn_RotationLock;
 	//EditText editText_URL;
@@ -84,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			url=new URL(str);
 			BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
 			//新建文件夹
-			File appDir = new File("data/data/com.example.webviewtest/SaveInternet/html");
+			File appDir = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()+File.separator+"html");
 			if (!appDir.exists()) {
 				appDir.mkdir();
 			}
@@ -120,17 +130,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	//String [] title;
 	//获取
-	public void autoX(){
+	public void autoGet(){
+		// 访问数据库
 		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
-
 		Cursor cur=db.rawQuery("select * from test",null);
 		sum=cur.getCount();
 		res = new String[sum];
-		//String sUser=String.format("共有记录数量：%d:\n",sum);
+		// 获取历史记录的标题
 		for(int i=0;i<sum;i++) {
 			cur.moveToPosition(i);
 			res[i] = cur.getString(0);
-			//sUser += String.format("%s,%s\n", cur.getString(0), cur.getString(1));
+		}
+	}
+	public void requestPermission() {
+		//权限检查
+		if (ContextCompat.checkSelfPermission(this,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			//申请权限
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (requestCode == 1) {
+			for (int i = 0; i < permissions.length; i++) {
+				//已授权
+				if (grantResults[i] == 0) {
+					continue;
+				}
+
+				if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
+					//选择禁止
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle("授权");
+					builder.setMessage("需要允许授权才可使用");
+					builder.setPositiveButton("去允许", (dialog, id) -> {
+						if (mDialog != null && mDialog.isShowing()) {
+							mDialog.dismiss();
+						}
+						ActivityCompat.requestPermissions(MainActivity.this,
+								new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+					});
+					mDialog = builder.create();
+					mDialog.setCanceledOnTouchOutside(false);
+					mDialog.show();
+				} else {
+					//选择禁止并勾选禁止后不再询问
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle("授权");
+					builder.setMessage("需要允许授权才可使用");
+					builder.setPositiveButton("去授权", (dialog, id) -> {
+						if (mDialog != null && mDialog.isShowing()) {
+							mDialog.dismiss();
+						}
+						Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+						Uri uri = Uri.fromParts("package", getPackageName(), null);
+						intent.setData(uri);
+						//调起应用设置页面
+						startActivityForResult(intent, 2);
+					});
+					mDialog = builder.create();
+					mDialog.setCanceledOnTouchOutside(false);
+					mDialog.show();
+				}
+			}
+		}
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 2) {
+			//应用设置页面返回后再次判断权限
+			requestPermission();
 		}
 	}
 	@SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled"})
@@ -157,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		Btn_Favourite.setOnClickListener(this);
 		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
 		Btn_History.setOnClickListener(this);
-		Button Btn_TestFavourite = (Button) findViewById(R.id.test_favourite);
+		ImageButton Btn_TestFavourite = (ImageButton) findViewById(R.id.imageButton_AddFavourite);
 		Btn_TestFavourite.setOnClickListener(this);
 
 		//创建三张表：历史记录(test)、收藏的页面(favouriteWebsite)、收藏夹内文件夹(favourite)
@@ -184,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//加载主页
 		webView.loadUrl("https://"+getResources().getString(R.string.url_home));
 		autoCompleteTextView.setText(webView.getUrl());
-
+		requestPermission();
 		//解决重定向导致网页无法访问以及返回键的问题
 		webView.setWebViewClient(new WebViewClient()
 		{
@@ -328,13 +403,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//设置输入框
 		autoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener()
 		{
+
 			@Override
 			public void onFocusChange(View view, boolean focus)
 			{
 				if(focus)
 				{
 
-					autoX();
+					autoGet();
 					ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
 					autoCompleteTextView.setAdapter(adapter);
 					//显示当前网址
@@ -512,22 +588,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				}
 				break;
 			case R.id.imageButton_Download:
-				File appDir0 = new File("data/data/com.example.webviewtest/SaveInternet");//xxxx为手机本地生成的文件夹名//称，自定义
+				File appDir0 = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 				if (!appDir0.exists()) {
 					appDir0.mkdir();
 				}
 				NowUrl= webView.getOriginalUrl();
 				new Thread(runnable).start();
-				@SuppressLint("SimpleDateFormat") SimpleDateFormat   formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				@SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date curDate =  new Date(System.currentTimeMillis());
 				//获取当前时间
 				String  str =  formatter.format(curDate);
-				File appDir1 = new File("data/data/com.example.webviewtest/SaveInternet/mht");//xxxx为手机本地生成的文件夹名//称，自定义
+				File appDir1 = new File(appDir0+File.separator+"mht");
 				if (!appDir1.exists()) {
 					appDir1.mkdir();
 				}
 				webView.saveWebArchive(appDir1+"/"+str+".mht",false,null);
-				String local= "浏览器：网页已保存到data/data/com.example.webviewtest/SaveInternet目录下(html,mht)";
+				String local= "浏览器：网页已保存到Android/data/com.example.webviewtest/files/Download目录下(html,mht)";
 				Toast.makeText(MainActivity.this,local,Toast.LENGTH_SHORT).show();
 				break;
 			case R.id.imageButton_NoPictureBrowsing:
@@ -596,7 +672,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
 				startActivity(historyIntent);
 				break;
-			case R.id.test_favourite:
+			case R.id.imageButton_AddFavourite:
 				ContentValues FavouriteCv = new ContentValues(4);
 				//int totalFavouriteWebsiteNum = app.getTotal_favourite_website_num()+1;
 				//System.out.println("geturl:"+totalFavouriteWebsiteNum);
@@ -615,9 +691,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	Runnable runnable = new Runnable(){
 		@Override
 		public void run() {
-			/**
-			 * 要执行的操作
-			 */
+			// 调用函数保存html文件
 			SaveHtml(NowUrl);
 			// 执行完毕后给handler发送一个空消息
 			handler.sendEmptyMessage(0);

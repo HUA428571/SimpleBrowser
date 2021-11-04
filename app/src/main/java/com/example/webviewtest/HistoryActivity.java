@@ -46,8 +46,8 @@ public class HistoryActivity extends AppCompatActivity  {
             //String sUser=String.format("共有记录数量：%d:\n",sum);
             for(int i=0;i<sum;i++) {
                 cur.moveToPosition(i);
-                title[i] = cur.getString(0);
-                url[i] = cur.getString(1);
+                title[sum-i-1] = cur.getString(0);
+                url[sum-i-1] = cur.getString(1);
                 //sUser += String.format("%s,%s\n", cur.getString(0), cur.getString(1));
             }
     }
