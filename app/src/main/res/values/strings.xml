@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WebViewTest</string>
+    <string name="app_name">Browser</string>
     <string name="Btn_GO">GO</string>
     <string name="Btn_FullScrean">FullScreen</string>
     <string name="Btn_History">Back</string>

@@ -23,9 +23,6 @@
         <activity
             android:name=".SelectFavouriteActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".FavouriteWebsiteListActivity"-->
-<!--            android:exported="false" />-->
         <activity
             android:name=".CheckFavouriteActivity"
             android:exported="false" />
