@@ -9,7 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
-public class SelectFavouriteActivity extends AppCompatActivity {
+public class SelectFavouriteActivity extends AppCompatActivity {  //移动网页时选择移动到的文件夹
     SQLiteDatabase db;
     private RecyclerView rv_selectFavouriteList;
     int favouriteSum;

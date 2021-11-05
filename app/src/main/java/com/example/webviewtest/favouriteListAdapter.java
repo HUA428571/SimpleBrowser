@@ -20,10 +20,9 @@ import com.example.webviewtest.application;
 public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAdapter.LinearViewHolder>{
 
     private Context mContext;
-    String[] favouriteName = {"菠菜宠物店1","菠菜宠物店2", "菠菜宠物店3", "菠菜宠物店4"};
-    //String[] url = {"重庆市北碚区天生路1号","重庆市北碚区天生路2号","重庆市北碚区天生路3号","重庆市北碚区天生路4号"};
-    int[] favouriteId;
-    int sum;
+    String[] favouriteName = {"测试1"}; //收藏夹名称
+    int[] favouriteId;  //收藏夹id
+    int sum;  //总数
     SQLiteDatabase db;
 
     public favouriteListAdapter(Context context,int sum,String[] favouriteName,int[] favouriteId,SQLiteDatabase db){
@@ -46,14 +45,9 @@ public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAda
     public void onBindViewHolder(favouriteListAdapter.LinearViewHolder holder,   int position) {
         int thisFavouriteId = this.favouriteId[position];
         holder.favouriteItemTitle.setText(favouriteName[position]);
-        //holder.favouriteItemUrl.setText(url[position]);
         holder.deleteFavourite.setOnClickListener(new View.OnClickListener() {    //删除文件夹
             @Override
             public void onClick(View view) {
-
-                //((Activity) mContext).finish();
-                //app.setTitle_from_history((String)holder.historyItemTitle.getText());
-                //app.setUrl_from_history((String)holder.historyItemUrl.getText());
                 db.execSQL("DElETE  FROM favourite where id= ?", new Object[]{thisFavouriteId});
                 db.execSQL("DElETE  FROM favouriteWebsite where favouriteId= ?", new Object[]{thisFavouriteId});
                 ((Activity) mContext).recreate();
@@ -109,20 +103,15 @@ public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAda
     class LinearViewHolder extends RecyclerView.ViewHolder {
         //找到组件
         private TextView favouriteItemTitle;
-        private LinearLayout favouriteItem;
         private Button deleteFavourite,editFavourite,editFavouriteConfirm;
-        private EditText editFavouriteName;
         private LinearLayout favouriteItemBody;
 
 
         public LinearViewHolder(View itemView) {
             super(itemView);
-            favouriteItem = itemView.findViewById(R.id.favourite_item);
             favouriteItemTitle = itemView.findViewById(R.id.favourite_item_title);
-            //favouriteItemUrl = itemView.findViewById(R.id.favourite_item_url);
             deleteFavourite = itemView.findViewById(R.id.delete_favourite);
             editFavourite = itemView.findViewById(R.id.edit_favourite);
-            editFavouriteName = itemView.findViewById(R.id.editFavourite_name);
             editFavouriteConfirm = itemView.findViewById(R.id.editFavourite_confirm);
             favouriteItemBody = itemView.findViewById(R.id.favourite_item_body);
         }

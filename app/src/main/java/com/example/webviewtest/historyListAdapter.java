@@ -47,6 +47,7 @@ public class historyListAdapter extends RecyclerView.Adapter <historyListAdapter
             @Override
             public void onClick(View view) {
                 ((Activity) mContext).finish();
+                //把所选中的历史记录数据传到application中的全局变量里
                 app.setTitle_from_history((String)holder.historyItemTitle.getText());
                 app.setUrl_from_history((String)holder.historyItemUrl.getText());
             }

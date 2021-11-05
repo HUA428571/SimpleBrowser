@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class AddFavouriteActivity extends AppCompatActivity implements View.OnClickListener{
+public class AddFavouriteActivity extends AppCompatActivity implements View.OnClickListener{ //添加收藏夹
 
     SQLiteDatabase db;
     int sum;
@@ -22,10 +22,8 @@ public class AddFavouriteActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_favourite);
-
         Button addFavourite_confirm = (Button) findViewById(R.id.addFavourite_confirm);
         addFavourite_confirm.setOnClickListener(this);
-
     }
 
     @SuppressLint("NonConstantResourceId")

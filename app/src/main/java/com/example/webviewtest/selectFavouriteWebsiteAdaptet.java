@@ -21,11 +21,10 @@ class selectFavouriteWebsiteAdapter extends RecyclerView.Adapter <selectFavourit
 
     private Context mContext;
 
-    String[] favouriteName;
-    //String[] url = {"重庆市北碚区天生路1号","重庆市北碚区天生路2号","重庆市北碚区天生路3号","重庆市北碚区天生路4号"};
-    int[] favouriteId;
-    int sum;
-    int fromWebsiteId;
+    String[] favouriteName; //文件夹名称数组
+    int[] favouriteId;  //文件夹id数组
+    int sum;  //总数
+    int fromWebsiteId; //所选择要移动的网页id，需要修改该id所属数据的favouriteId
     SQLiteDatabase db;
 
     public selectFavouriteWebsiteAdapter(Context context,int sum,int[] favouriteId,String[] favouriteName,int fromWebsiteId,SQLiteDatabase db){
@@ -54,7 +53,6 @@ class selectFavouriteWebsiteAdapter extends RecyclerView.Adapter <selectFavourit
             public void onClick(View view) {
                 db.execSQL("Update favouriteWebsite set favouriteId= ?  where id= ? ", new Object[]{thisFavouriteId, fromWebsiteId } );
                 ((Activity)mContext).finish();
-                //Intent favouriteWebsiteListActivity = new Intent(mContext,FavouriteActivity.class);
             }
         });
     }
@@ -62,7 +60,6 @@ class selectFavouriteWebsiteAdapter extends RecyclerView.Adapter <selectFavourit
     @Override
     //获取列表长度
     public int getItemCount() {
-
         return this.sum;
     }
 

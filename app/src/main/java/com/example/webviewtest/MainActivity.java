@@ -276,18 +276,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				super.onPageFinished(view, url);
 				textUrl.setText(webView.getTitle());
 
-				//System.out.println(url);
+				//页面加载完成将当前页面标题和网址添加进历史记录的表中
 				Cursor cur=db.rawQuery("select * from test",null);
 				ContentValues cv = new ContentValues(2);
 				int sum=cur.getCount();
 				System.out.println("sum:"+sum);
 				if(sum==0){
+					//若表中无数据则直接添加
 					cv.put("url",url);
 					cv.put("title",view.getTitle());
 					db.insert("test", null,cv);
 					//System.out.println("111111111111111111");
 				}
 				else{
+					//若有数据则遍历查看是否已经存在，存在则放到第一位（最后访问）
 					for(int i=0;i<sum;i++) {
 						cur.moveToPosition(i);
 						System.out.println("url:"+url);
@@ -649,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					flag_isRotationLock=false;
 				}
 				break;
-			case R.id.imageButton_Favourite:
+			case R.id.imageButton_Favourite://查看收藏夹
 				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
 				startActivity(favouriteIntent);
 				break;
@@ -658,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				Intent historyIntent = new Intent(MainActivity.this,HistoryActivity.class);
 				startActivity(historyIntent);
 				break;
-			case R.id.imageButton_AddFavourite:
+			case R.id.imageButton_AddFavourite://将当前网页添加进收藏夹
 				ContentValues FavouriteCv = new ContentValues(4);
 				//int totalFavouriteWebsiteNum = app.getTotal_favourite_website_num()+1;
 				//System.out.println("geturl:"+totalFavouriteWebsiteNum);
@@ -715,16 +717,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		super.onResume();
 		webView = (WebView) findViewById(R.id.webview_main);
 		EditText editText_URL = findViewById(R.id.urlTextInput);
-
 		application app = (application) getApplication();
-
+		//从application里来自收藏夹或者历史记录中的页面信息并加载
 		if(app.getUrl_from_favourite()=="")
 		{
-			//webView.loadUrl();
 		}
 		else
 		{
-			//System.out.println("123456");
 			webView.loadUrl(app.getUrl_from_favourite());
 			editText_URL.setText(app.getTitle_from_favourite());
 			app.setUrl_from_favourite("");
@@ -732,7 +731,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		if(app.getUrl_from_history()=="")
 		{
-			//webView.loadUrl();
 		}
 		else
 		{

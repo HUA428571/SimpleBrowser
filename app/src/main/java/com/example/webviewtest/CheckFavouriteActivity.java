@@ -11,9 +11,9 @@ import android.os.Bundle;
 
 public class CheckFavouriteActivity extends AppCompatActivity {
     SQLiteDatabase db;
-    int favouriteSum;
-    String[] favouriteName;
-    int[] favouriteId;
+    int favouriteSum;  //收藏夹总数
+    String[] favouriteName;  //收藏夹名称
+    int[] favouriteId;  //收藏夹id
     private RecyclerView rv_favouriteList;
 
     @Override
@@ -26,7 +26,6 @@ public class CheckFavouriteActivity extends AppCompatActivity {
         rv_favouriteList = findViewById(R.id.favouriteList);
         rv_favouriteList.setLayoutManager(new LinearLayoutManager(CheckFavouriteActivity.this));
         rv_favouriteList.setAdapter(new favouriteListAdapter(CheckFavouriteActivity.this,this.favouriteSum,this.favouriteName,this.favouriteId,this.db));
-        //rv_favouriteList.setAdapter(new favouriteWebsiteListAdapter(CheckFavouriteActivity.this,this.sum,this.title,this.url));
     }
 
     @Override
@@ -35,7 +34,6 @@ public class CheckFavouriteActivity extends AppCompatActivity {
         init();
         getSupportActionBar().hide();
         setContentView(R.layout.activity_check_favourite);
-
         rv_favouriteList = findViewById(R.id.favouriteList);
         rv_favouriteList.setLayoutManager(new LinearLayoutManager(CheckFavouriteActivity.this));
         rv_favouriteList.setAdapter(new favouriteListAdapter(CheckFavouriteActivity.this,this.favouriteSum,this.favouriteName,this.favouriteId,this.db));
@@ -50,7 +48,6 @@ public class CheckFavouriteActivity extends AppCompatActivity {
         favouriteId = new int[favouriteSum];
         for(int i=0;i<favouriteSum;i++) {
             favouriteCur.moveToPosition(i);
-            //System.out.println("id:"+favouriteWebsitecCur.getInt(2));
             favouriteName[i] = favouriteCur.getString(1);
             favouriteId[i] = favouriteCur.getInt(0);
         }

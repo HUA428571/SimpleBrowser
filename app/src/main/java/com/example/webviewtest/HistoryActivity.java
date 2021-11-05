@@ -16,12 +16,11 @@ import android.widget.TextView;
 import com.example.webviewtest.application;
 
 public class HistoryActivity extends AppCompatActivity  {
-    SQLiteDatabase db;
-    String [] title;
-    String [] url;
+    SQLiteDatabase db; //数据库
+    String [] title; //标题数组
+    String [] url;  //网址数组，和标题数组一一对应
     int sum;
     application app;
-    //LayoutInflater inflater = getLayoutInflater();
     private RecyclerView rv_historyList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,27 +36,14 @@ public class HistoryActivity extends AppCompatActivity  {
 
     public void init(){
         db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
-
             Cursor cur=db.rawQuery("select * from test",null);
             sum=cur.getCount();
             title = new String[sum];
             url = new String[sum];
-            //String sUser=String.format("共有记录数量：%d:\n",sum);
             for(int i=0;i<sum;i++) {
                 cur.moveToPosition(i);
                 title[sum-i-1] = cur.getString(0);
                 url[sum-i-1] = cur.getString(1);
-                //sUser += String.format("%s,%s\n", cur.getString(0), cur.getString(1));
             }
     }
-
-//    @SuppressLint("NonConstantResourceId")
-//    @Override
-//    public void onClick(View view)
-//    {
-//        if(view.getId() == R.id.history_item)
-//        {
-//            finish();
-//        }
-//    }
 }

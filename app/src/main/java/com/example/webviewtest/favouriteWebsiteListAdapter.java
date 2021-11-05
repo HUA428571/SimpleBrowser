@@ -25,9 +25,7 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
     List<String> favouriteWebsiteTitle ;
     List<String> favouriteWebsiteUrl;
     List<Integer> id;
-    //int[] favouriteId;
     int sum;
-    int fromWebsiteId;
     SQLiteDatabase db;
 
     public favouriteWebsiteListAdapter(Context context, int sum, List<String> favouriteWebsiteTitle, List<String> favouriteWebsiteUrl, List<Integer> id, SQLiteDatabase db){
@@ -50,43 +48,29 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
     //绑定ViewHolder
     //public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     public void onBindViewHolder(favouriteWebsiteListAdapter.LinearViewHolder holder, final int position) {
-        int thisId;
+        int thisId; //当前收藏网页对应在表里的id
 
         if(this.id.size()>0&&this.id!=null)
         {
-             thisId = this.id.get(position);
+             thisId = this.id.get(position); //若收藏网页表不为空，则赋值
         }
         else{
-            thisId = 0;
+            thisId = 0; //若不为空则赋值0
         }
-
-
-
-        //System.out.println("idtoput:"+id[position]);
-
-        //System.out.println("titletoput:"+favouriteWebsiteTitle[position]);
-        //System.out.println("urltoput:"+favouriteWebsiteUrl[position]);
-        //System.out.println("favouriteid:"+favouriteWebsiteCur.getInt(3));
         if(this.favouriteWebsiteTitle.size()>0&&this.favouriteWebsiteTitle!=null)
         {
-            holder.favouriteWebsiteItemTitle.setText(this.favouriteWebsiteTitle.get(position));
+            holder.favouriteWebsiteItemTitle.setText(this.favouriteWebsiteTitle.get(position)); //将未修改前的标题自动传入
         }
         if(this.favouriteWebsiteUrl.size()>0&&this.favouriteWebsiteUrl!=null)
         {
-            holder.favouriteWebsiteItemUrl.setText(this.favouriteWebsiteUrl.get(position));
+            holder.favouriteWebsiteItemUrl.setText(this.favouriteWebsiteUrl.get(position));  //将未修改前的网址自动传入
         }
-
-
-
-
             holder.deleteFavouriteWebsite.setOnClickListener(new View.OnClickListener() {    //删除网站
             @Override
             public void onClick(View view) {
                 if(thisId!=0)
                 {
                     db.execSQL("DElETE  FROM favouriteWebsite where id= ?", new Object[]{thisId});
-                    //System.out.println(thisId);
-                    //db.execSQL("DElETE  FROM favouriteWebsite where favouriteId= ?", new Object[]{thisFavouriteId});
                     ((Activity) mContext).recreate();
                 }
 
@@ -113,11 +97,9 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
                     }
                 });
 
-                editFavouriteWebsiteCancel.setOnClickListener(new View.OnClickListener() {
+                editFavouriteWebsiteCancel.setOnClickListener(new View.OnClickListener() { //取消修改
                     @Override
                     public void onClick(View view) {
-                        //db.execSQL("Update favouriteWebsite set title= ?,url=?  where id= ? ", new Object[]{editFavouriteWebsiteName.getText(),editFavouriteWebsiteUrl.getText(), thisId } );
-                        //((Activity) mContext).setContentView(R.layout.activity_favourite);
                         ((Activity) mContext).recreate();
                     }
                 });
@@ -147,16 +129,11 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
     class LinearViewHolder extends RecyclerView.ViewHolder {
         //找到组件
         private TextView favouriteWebsiteItemTitle,favouriteWebsiteItemUrl;
-        private LinearLayout favouriteWebsiteItem;
-        private LinearLayout favouriteWebsiteItemBody;
         private Button deleteFavouriteWebsite,editFavouriteWebsite,moveFavouriteWebsite;
-
         public LinearViewHolder(View itemView) {
             super(itemView);
-            favouriteWebsiteItem = itemView.findViewById(R.id.favouriteWebsite_item);
             favouriteWebsiteItemTitle = itemView.findViewById(R.id.favouriteWebsite_item_title);
             favouriteWebsiteItemUrl = itemView.findViewById(R.id.favouriteWebsite_item_url);
-            favouriteWebsiteItemBody = itemView.findViewById(R.id.favouriteWebsite_item_body);
             deleteFavouriteWebsite = itemView.findViewById(R.id.delete_favouriteWebsite);
             editFavouriteWebsite = itemView.findViewById(R.id.edit_favouriteWebsite);
             moveFavouriteWebsite = itemView.findViewById(R.id.move_favouriteWebsite);
