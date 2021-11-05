@@ -26,7 +26,6 @@ public class HistoryActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("history");
         app = (application)getApplication();
         init();
         setContentView(R.layout.activity_history);

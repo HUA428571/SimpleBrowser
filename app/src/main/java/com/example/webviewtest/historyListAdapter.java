@@ -17,8 +17,8 @@ import com.example.webviewtest.application;
 public class historyListAdapter extends RecyclerView.Adapter <historyListAdapter.LinearViewHolder>{
 
     private Context mContext;
-    String[] title = {"菠菜宠物店1","菠菜宠物店2", "菠菜宠物店3", "菠菜宠物店4"};
-    String[] url = {"重庆市北碚区天生路1号","重庆市北碚区天生路2号","重庆市北碚区天生路3号","重庆市北碚区天生路4号"};
+    String[] title = {"测试1"};
+    String[] url = {"测试2"};
     int sum;
     application app;
 

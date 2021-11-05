@@ -317,20 +317,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
 			{
-				if (startUrl != null && startUrl.equals(request))
+				if (request.toString().startsWith("http://") || request.toString().startsWith("https://"))
 				{
-					if (request.toString().startsWith("http://") || request.toString().startsWith("https://"))
-					{
-						//加载的url是http\https协议地址
-						view.loadUrl(request.getUrl().toString());
-						return false; //返回false表示此url默认由系统处理,否则不加载新的页面
-					} else
-						Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.Tip_IllegalURL), Toast.LENGTH_SHORT).show();
-				} else
-				{
-					return super.shouldOverrideUrlLoading(view, request);
+					//加载的url是http\https协议地址
+					view.loadUrl(request.getUrl().toString());
+					return false; //返回false表示此url默认由系统处理,否则不加载新的页面
 				}
-				return true;
+					return super.shouldOverrideUrlLoading(view, request);
 			}
 		});
 		webView.setWebChromeClient(new WebChromeClient()
@@ -558,8 +551,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						}
 						urlInput = "www.baidu.com/s?wd=" + urlInput + "&ie=UTF-8";
 					}
-					if(!(urlInput.startsWith("http://") || urlInput.startsWith("https://")))
+					if(!(urlInput.startsWith("http://") || urlInput.startsWith("https://"))) {
 						urlInput = "http://" + urlInput;
+						System.out.println("http1");
+					}
 					webView.loadUrl(urlInput);
 					ContentValues cv = new ContentValues(2);
 					// 取消掉地址栏的焦点
@@ -748,14 +743,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	public static boolean isHttpUrl(String urls) {
-		boolean isUrl;
+		boolean isUrl1;
+		boolean isUrl2;
 		// 判断是否是网址的正则表达式
-		String regex = "([a-z0-9]+[.])|(www.)"
+		String regex1 = "([a-z0-9]+[.])|(www.)"
 				+ "\\w+[.|\\/]([a-z0-9]{0,})?[[.]([a-z0-9]{0,})]+((/[\\S&&[^,;\u4E00-\u9FA5]]+)+)?([.][a-z0-9]{0,}+|/?)";
 
-		Pattern pat = Pattern.compile(regex.trim());
-		Matcher mat = pat.matcher(urls.trim());
-		isUrl = mat.matches();
-		return isUrl;
+		String regex2 = "(((https|http)?://)?([a-z0-9]+[.])|(www.))"
+				+ "\\w+[.|\\/]([a-z0-9]{0,})?[[.]([a-z0-9]{0,})]+((/[\\S&&[^,;\u4E00-\u9FA5]]+)+)?([.][a-z0-9]{0,}+|/?)";
+		Pattern pat1 = Pattern.compile(regex1.trim());
+		Pattern pat2 = Pattern.compile(regex2.trim());
+		Matcher mat1 = pat1.matcher(urls.trim());
+		Matcher mat2 = pat2.matcher(urls.trim());
+		isUrl1 = mat1.matches();
+		isUrl2 = mat2.matches();
+		return (isUrl1||isUrl2);
 	}
 }
