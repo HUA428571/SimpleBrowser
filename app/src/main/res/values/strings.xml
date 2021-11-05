@@ -14,4 +14,5 @@
     <string name="imageButton_Download">Download</string>
     <string name="imageButton_NoFullScreen">NoFullScreen</string>
     <string name="imageButton_WithPictureBrowsing">WithPictureBrowsing</string>
+    <string name="imageButton_RotationUnLock">RotationUnLock</string>
 </resources>

@@ -31,6 +31,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -39,6 +40,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.database.Cursor;
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	String [] res= null;//获取历史记录以进行自动匹配的数组
 	int sum;
 	private WebView webView;
+	private ProgressBar progressBar;
+	private EditText textUrl;
 	private long exitTime = 0;
 	public static final String TAG= "MainActivity";
 	String NowUrl= null;
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	ImageButton btn_GO,btn_Back,btn_GoForward,btn_Settings,btn_downLoad,btn_NoPictureBrowsing,btn_FullScreen,btn_RotationLock;
 	//EditText editText_URL;
-	TextView text_FullScreen,text_NoPictureBrowsing;
+	TextView text_FullScreen,text_NoPictureBrowsing,text_RotationLock,text_Download;
 
 	//设定一个flag表示现在底边栏的显示状态
 	private boolean flag_isBarVisible = true;
@@ -224,16 +228,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		View settings = findViewById(R.id.constraintLayout_menu);
 		settings.setVisibility(View.INVISIBLE);
 
-
 		//初始化控件
 		initView();
-
-		ImageButton Btn_Favourite = (ImageButton) findViewById(R.id.imageButton_Favourite);
-		Btn_Favourite.setOnClickListener(this);
-		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
-		Btn_History.setOnClickListener(this);
-		ImageButton Btn_TestFavourite = (ImageButton) findViewById(R.id.imageButton_AddFavourite);
-		Btn_TestFavourite.setOnClickListener(this);
 
 		//创建三张表：历史记录(test)、收藏的页面(favouriteWebsite)、收藏夹内文件夹(favourite)
 		db=openOrCreateDatabase("TestDB", Context.MODE_PRIVATE,null);
@@ -269,6 +265,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon)
 			{
+				// 网页开始加载，显示进度条
+				progressBar.setProgress(0);
 				super.onPageStarted(view, url, favicon);
 				startUrl = url;
 			}
@@ -276,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				super.onPageFinished(view, url);
+				textUrl.setText(webView.getTitle());
 
 				//System.out.println(url);
 				Cursor cur=db.rawQuery("select * from test",null);
@@ -311,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 							db.insert("test", null,cv);
 							//System.out.println("111111111111111111");
 						}
-
 					}
 				}
 
@@ -333,6 +331,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					return super.shouldOverrideUrlLoading(view, request);
 				}
 				return true;
+			}
+		});
+		webView.setWebChromeClient(new WebChromeClient()
+		{
+			@Override
+			public void onProgressChanged(WebView view, int newProgress) {
+				super.onProgressChanged(view, newProgress);
+
+				// 加载进度变动，刷新进度条
+				progressBar.setProgress(newProgress);
 			}
 		});
 
@@ -378,22 +386,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						flag_isSettingsVisible = false;
 					} else if (y2 - y1 > 50)
 					{
-						//Toast.makeText(MainActivity.this, "向下滑", Toast.LENGTH_SHORT).show();
-
 						if (flag_isBarVisible == false)
 						{
 							animationBarVisible(bar);
 							flag_isBarVisible = true;
 						}
-//						bar.setVisibility(View.INVISIBLE);
-//						flag_isBarVisible=true;
 						bar.setVisibility(View.VISIBLE);
-					} else if (x1 - x2 > 50)
-					{
-						Toast.makeText(MainActivity.this, "向左滑", Toast.LENGTH_SHORT).show();
-					} else if (x2 - x1 > 50)
-					{
-						Toast.makeText(MainActivity.this, "向右滑", Toast.LENGTH_SHORT).show();
 					}
 				}
 				return false;
@@ -403,13 +401,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//设置输入框
 		autoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener()
 		{
-
 			@Override
 			public void onFocusChange(View view, boolean focus)
 			{
 				if(focus)
 				{
-
 					autoGet();
 					ArrayAdapter<String> adapter= new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1,res);
 					autoCompleteTextView.setAdapter(adapter);
@@ -442,21 +438,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				return false;
 			}
 		});
-
-
-		//自动匹配
-
-
 	}
 
 	private void initView()
 	{
+		//初始化控件
 		webView = (WebView) findViewById(R.id.webview_main);
 		//editText_URL = findViewById(R.id.urlTextInput);
-		text_FullScreen = findViewById(R.id.textView_FullScreen);
+		text_Download=findViewById(R.id.textView_Download);
+		text_Download.setOnClickListener(this);
 		text_NoPictureBrowsing=findViewById(R.id.textView_NoPictureBrowsing);
+		text_NoPictureBrowsing.setOnClickListener(this);
+		text_FullScreen = findViewById(R.id.textView_FullScreen);
+		text_FullScreen.setOnClickListener(this);
+		text_RotationLock=findViewById(R.id.textView_RotationLock);
+		text_RotationLock.setOnClickListener(this);
+
+		progressBar = findViewById(R.id.progressBar);
+		textUrl=findViewById(R.id.urlTextInput);
 
 		//绑定按钮点击事件
+		ImageButton Btn_Favourite = (ImageButton) findViewById(R.id.imageButton_Favourite);
+		Btn_Favourite.setOnClickListener(this);
+		ImageButton Btn_History = (ImageButton) findViewById(R.id.imageButton_History);
+		Btn_History.setOnClickListener(this);
+		ImageButton Btn_TestFavourite = (ImageButton) findViewById(R.id.imageButton_AddFavourite);
+		Btn_TestFavourite.setOnClickListener(this);
 		btn_GO = (ImageButton) findViewById(R.id.imageButton_GO);
 		btn_GO.setOnClickListener(this);
 		btn_Back = (ImageButton) findViewById(R.id.imageButton_Back);
@@ -509,7 +516,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 	}
 
-
 	@SuppressLint("NonConstantResourceId")
 	@Override
 	public void onClick(View view)
@@ -539,12 +545,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				EditText editText_URL = findViewById(R.id.urlTextInput);
 				//注意，这边我们指定输入法模式，在布局文件中
 				String urlInput = editText_URL.getText().toString();
-
-				//test
-				//Toast.makeText(MainActivity.this,urlInput, Toast.LENGTH_SHORT).show();
-				//webView.loadUrl("http://www.bing.com");
-				//test over
-
 				//地址栏有焦点，跳转
 				if (editText_URL.hasFocus()) {
 					//隐藏键盘
@@ -552,18 +552,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					if (manager.isActive()) {
 						manager.hideSoftInputFromWindow(editText_URL.getApplicationWindowToken(), 0);
 					}
-//					if (!isHttpUrl(urlInput)) {
-//						// 不是网址，加载搜索
-//						try {
-//							// URL 编码
-//							urlInput = URLEncoder.encode(urlInput, "utf-8");
-//						} catch (UnsupportedEncodingException e) {
-//							e.printStackTrace();
-//						}
-//						urlInput = "https://www.baidu.com/s?wd=" + urlInput + "&ie=UTF-8";
-//					}
-//					else
-//					{
 					if (!isHttpUrl(urlInput)) {
 						// 不是网址，加载搜索引擎处理
 						try {
@@ -576,7 +564,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					}
 					if(!(urlInput.startsWith("http://") || urlInput.startsWith("https://")))
 						urlInput = "http://" + urlInput;
-//					}
 					webView.loadUrl(urlInput);
 					ContentValues cv = new ContentValues(2);
 					// 取消掉地址栏的焦点
@@ -624,6 +611,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				}
 				break;
 			case R.id.imageButton_FullScreen:
+				//全屏
 				if(flag_isFullScreen==false)
 				{
 					//去掉最上面时间、电量等
@@ -638,7 +626,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					flag_isBarVisible = false;
 					flag_isFullScreen=true;
 					//最后我们将图标改成退出全屏的样式
-					btn_FullScreen.setBackgroundResource(R.mipmap.btn_no_full_screen);
+					btn_FullScreen.setBackgroundResource(R.drawable.new_btn_image_no_full_screen);
 					text_FullScreen.setText(getResources().getString(R.string.imageButton_NoFullScreen));
 				}
 				else
@@ -646,19 +634,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					this.getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 					flag_isFullScreen=false;
 					//最后我们将图标改成进入全屏的样式
-					btn_FullScreen.setBackgroundResource(R.mipmap.btn_full_screen);
+					btn_FullScreen.setBackgroundResource(R.drawable.new_btn_image_full_screen);
 					text_FullScreen.setText(getResources().getString(R.string.imageButton_FullScreen));
 				}
 				break;
 			case R.id.imageButton_RotationLock:
+				//旋转锁定
 				if(flag_isRotationLock==false)
 				{
 					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+					//最后我们将图标改成解除旋转锁定的样式
+					btn_RotationLock.setBackgroundResource(R.drawable.new_btn_image_rotation_un_lock);
+					text_RotationLock.setText(getResources().getString(R.string.imageButton_RotationUnLock));
 					flag_isRotationLock=true;
  				}
 				else
 				{
 					this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+					//最后我们将图标改成接触旋转锁定的样式
+					btn_RotationLock.setBackgroundResource(R.drawable.new_btn_image_rotation_lock);
+					text_RotationLock.setText(getResources().getString(R.string.imageButton_RotationLock));
 					flag_isRotationLock=false;
 				}
 				break;
@@ -685,6 +680,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				db.insert("favouriteWebsite", null,FavouriteCv);
 				//System.out.println("titletoinsert:"+webView.getTitle());
 				Toast.makeText(MainActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
+			case R.id.textView_Download:
+				onClick(btn_downLoad);
+				break;
+			case R.id.textView_NoPictureBrowsing:
+				onClick(btn_NoPictureBrowsing);
+				break;
+			case R.id.textView_FullScreen:
+				onClick(btn_FullScreen);
+				break;
+			case R.id.textView_RotationLock:
+				onClick(btn_RotationLock);
+				break;
 		}
 	}
 
@@ -737,14 +744,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 		else
 		{
-			//System.out.println("123456");
 			webView.loadUrl(app.getUrl_from_history());
 			editText_URL.setText(app.getTitle_from_history());
 			app.setUrl_from_history("");
 		}
-
-
-		//System.out.println("123456");
 	}
 
 	public static boolean isHttpUrl(String urls) {
@@ -758,29 +761,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		isUrl = mat.matches();
 		return isUrl;
 	}
-//	@Override
-//	public boolean onTouchEvent(MotionEvent event) {
-//		//继承了Activity的onTouchEvent方法，直接监听点击事件
-//		if(event.getAction() == MotionEvent.ACTION_DOWN) {
-//			//当手指按下的时候
-//			x1 = event.getX();
-//			y1 = event.getY();
-//		}
-//		if(event.getAction() == MotionEvent.ACTION_UP) {
-//			//当手指离开的时候
-//			x2 = event.getX();
-//			y2 = event.getY();
-//			if(y1 - y2 > 50) {
-//				Toast.makeText(MainActivity.this, "向上滑", Toast.LENGTH_SHORT).show();
-//			} else if(y2 - y1 > 50) {
-//				Toast.makeText(MainActivity.this, "向下滑", Toast.LENGTH_SHORT).show();
-//			} else if(x1 - x2 > 50) {
-//				Toast.makeText(MainActivity.this, "向左滑", Toast.LENGTH_SHORT).show();
-//			} else if(x2 - x1 > 50) {
-//				Toast.makeText(MainActivity.this, "向右滑", Toast.LENGTH_SHORT).show();
-//			}
-//		}
-//		return super.onTouchEvent(event);
-//	}
-
 }
