@@ -411,12 +411,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					autoCompleteTextView.setAdapter(adapter);
 					//显示当前网址
 					autoCompleteTextView.setText(webView.getUrl());//,TextView.BufferType.EDITABLE
-					//autoCompleteTextView.setSelectAllOnFocus(true);
-//					//光标置于末尾
-//					//editText_URL.setSelection(editText_URL.getText().length());
-//					//显示选中
-//					editText_URL.setSelection(0,editText_URL.getText().length());
-//				//(editText_URL.getText());
+					//更改图标为访问
+					btn_GO.setBackgroundResource(R.drawable.new_btn_image_forward);
 				}
 				else
 				{
@@ -568,6 +564,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					ContentValues cv = new ContentValues(2);
 					// 取消掉地址栏的焦点
 					editText_URL.clearFocus();
+					btn_GO.setBackgroundResource(R.drawable.new_btn_image_reload);
 				} else
 				{
 					// 地址栏没焦点，是刷新
