@@ -658,7 +658,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				}
 				break;
 			case R.id.imageButton_Favourite:
-
 				Intent favouriteIntent = new Intent(MainActivity.this,FavouriteActivity.class);
 				startActivity(favouriteIntent);
 				break;
@@ -680,6 +679,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				db.insert("favouriteWebsite", null,FavouriteCv);
 				//System.out.println("titletoinsert:"+webView.getTitle());
 				Toast.makeText(MainActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
+				break;
 			case R.id.textView_Download:
 				onClick(btn_downLoad);
 				break;
