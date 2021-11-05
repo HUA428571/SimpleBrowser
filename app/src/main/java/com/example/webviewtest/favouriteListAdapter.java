@@ -87,8 +87,6 @@ public class favouriteListAdapter extends RecyclerView.Adapter <favouriteListAda
                 ((Activity) mContext).startActivity(favouriteWebsiteListActivity);
             }
         });
-
-
     }
 
     @Override

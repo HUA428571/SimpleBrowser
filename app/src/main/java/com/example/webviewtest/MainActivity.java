@@ -662,16 +662,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				break;
 			case R.id.imageButton_AddFavourite://将当前网页添加进收藏夹
 				ContentValues FavouriteCv = new ContentValues(4);
-				//int totalFavouriteWebsiteNum = app.getTotal_favourite_website_num()+1;
-				//System.out.println("geturl:"+totalFavouriteWebsiteNum);
-				//System.out.println("gettitle:"+webView.getTitle());
 				app.setTotal_favourite_website_num(app.getTotal_favourite_website_num()+1);
 				FavouriteCv.put("id",app.getTotal_favourite_website_num());
 				FavouriteCv.put("title",webView.getTitle());
 				FavouriteCv.put("url",webView.getUrl());
 				FavouriteCv.put("favouriteId",0);
 				db.insert("favouriteWebsite", null,FavouriteCv);
-				//System.out.println("titletoinsert:"+webView.getTitle());
 				Toast.makeText(MainActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
 				break;
 			case R.id.textView_Download:

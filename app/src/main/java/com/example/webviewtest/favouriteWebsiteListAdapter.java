@@ -96,7 +96,6 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
                         ((Activity) mContext).recreate();
                     }
                 });
-
                 editFavouriteWebsiteCancel.setOnClickListener(new View.OnClickListener() { //取消修改
                     @Override
                     public void onClick(View view) {
@@ -105,7 +104,6 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
                 });
             }
         });
-
         holder.moveFavouriteWebsite.setOnClickListener(new View.OnClickListener() {    //移动
             @Override
             public void onClick(View view) {
@@ -114,7 +112,6 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
                 ((Activity) mContext).startActivity(selectFavouriteActivity);
             }
         });
-
     }
 
     @Override
