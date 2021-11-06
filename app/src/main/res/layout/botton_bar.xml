@@ -13,7 +13,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
     </WebView>
 
@@ -46,12 +46,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <AutoCompleteTextView
-                android:completionThreshold="1"
                 android:id="@+id/urlTextInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="@null"
+                android:completionThreshold="1"
                 android:ems="10"
                 android:hint="input url"
                 android:imeOptions="actionGo"
@@ -68,9 +68,9 @@
                 android:layout_height="40dp"
                 android:layout_marginEnd="2dp"
                 android:background="@drawable/new_btn_image_reload"
-                android:src="@drawable/ripple_item_normal"
                 android:scaleX="0.8"
                 android:scaleY="0.8"
+                android:src="@drawable/ripple_item_normal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -85,7 +85,6 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
         <ImageButton
@@ -107,9 +106,9 @@
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/new_btn_image_forward"
-            android:src="@drawable/ripple_item_normal"
             android:scaleX="0.9"
             android:scaleY="0.9"
+            android:src="@drawable/ripple_item_normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageButton_History"
             app:layout_constraintStart_toEndOf="@+id/imageButton_Back" />
@@ -120,9 +119,9 @@
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/new_btn_image_history"
-            android:src="@drawable/ripple_item_normal"
             android:scaleX="0.9"
             android:scaleY="0.9"
+            android:src="@drawable/ripple_item_normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageButton_AddFavourite"
             app:layout_constraintStart_toEndOf="@+id/imageButton_Forward" />
@@ -156,9 +155,9 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/new_btn_image_settings"
-            android:src="@drawable/ripple_item_normal"
             android:scaleX="0.9"
             android:scaleY="0.9"
+            android:src="@drawable/ripple_item_normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -229,10 +228,10 @@
             android:layout_height="40dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/ripple_item_normal"
             android:background="@drawable/new_btn_image_full_screen"
             android:scaleX="0.8"
             android:scaleY="0.8"
+            android:src="@drawable/ripple_item_normal"
             app:layout_constraintBottom_toTopOf="@+id/imageButton_RotationLock"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -253,10 +252,10 @@
             android:id="@+id/imageButton_NoPictureBrowsing"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ripple_item_normal"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/new_btn_image_no_picture_broswing"
+            android:src="@drawable/ripple_item_normal"
             app:layout_constraintBottom_toTopOf="@+id/imageButton_FullScreen"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -277,11 +276,11 @@
             android:id="@+id/imageButton_Download"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ripple_item_normal"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/new_btn_image_download"
+            android:src="@drawable/ripple_item_normal"
             app:layout_constraintBottom_toTopOf="@+id/imageButton_NoPictureBrowsing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

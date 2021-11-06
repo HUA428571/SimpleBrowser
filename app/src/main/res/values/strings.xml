@@ -7,7 +7,7 @@
     <string name="Tip_IllegalURL">IllegalURL!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="url_home">www.njupt.edu.cn</string>
+    <string name="url_home" translatable="false">www.njupt.edu.cn</string>
     <string name="imageButton_RotationLock">RotationLock</string>
     <string name="imageButton_FullScreen">FullScreen</string>
     <string name="imageButton_NoPictureBrowsing">NoPictureBrowsing</string>
