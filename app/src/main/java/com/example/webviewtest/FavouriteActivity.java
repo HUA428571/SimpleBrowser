@@ -32,11 +32,13 @@ public class FavouriteActivity extends AppCompatActivity implements View.OnClick
     List<String> title; //收藏的网页标题List
     List<String> url;  //收藏的网页网址List
     RecyclerView rv_favouriteWebsiteList;
+    application app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         favouriteId=getIntent().getIntExtra("favouriteId",0); //获取来自的收藏夹id（默认为0）
+        app = (application)getApplication();
     }
 
     @Override
@@ -49,7 +51,7 @@ public class FavouriteActivity extends AppCompatActivity implements View.OnClick
         init();
         rv_favouriteWebsiteList = findViewById(R.id.favouriteWebsiteList);
         rv_favouriteWebsiteList.setLayoutManager(new LinearLayoutManager(FavouriteActivity.this));
-        rv_favouriteWebsiteList.setAdapter(new favouriteWebsiteListAdapter(FavouriteActivity.this,this.sum,this.title,this.url,this.id,this.db));
+        rv_favouriteWebsiteList.setAdapter(new favouriteWebsiteListAdapter(FavouriteActivity.this,this.sum,this.title,this.url,this.id,this.db,this.app));
         Button addFavourite = (Button) findViewById(R.id.addFavourite);
         Button checkFavourite = (Button) findViewById(R.id.checkFavourite);
         addFavourite.setOnClickListener(this);

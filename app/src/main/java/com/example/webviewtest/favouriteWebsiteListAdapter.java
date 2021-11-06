@@ -27,14 +27,16 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
     List<Integer> id;
     int sum;
     SQLiteDatabase db;
+    application app;
 
-    public favouriteWebsiteListAdapter(Context context, int sum, List<String> favouriteWebsiteTitle, List<String> favouriteWebsiteUrl, List<Integer> id, SQLiteDatabase db){
+    public favouriteWebsiteListAdapter(Context context, int sum, List<String> favouriteWebsiteTitle, List<String> favouriteWebsiteUrl, List<Integer> id, SQLiteDatabase db, application app){
         this.mContext=context;
         this.sum = sum;
         this.favouriteWebsiteTitle = favouriteWebsiteTitle;
         this.favouriteWebsiteUrl = favouriteWebsiteUrl;
         this.id = id;
         this.db = db;
+        this.app = app;
 
     }//构造方法
     @Override
@@ -112,6 +114,18 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
                 ((Activity) mContext).startActivity(selectFavouriteActivity);
             }
         });
+
+        holder.favouriteWebsiteItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((Activity) mContext).finish();
+                app.setTitle_from_favourite((String)holder.favouriteWebsiteItemTitle.getText());
+                app.setUrl_from_favourite((String)holder.favouriteWebsiteItemUrl.getText());
+                Intent newIntent = new Intent(mContext, MainActivity.class);
+                ((Activity) mContext).startActivity(newIntent);
+            }
+        });
+
     }
 
     @Override
@@ -127,6 +141,7 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
         //找到组件
         private TextView favouriteWebsiteItemTitle,favouriteWebsiteItemUrl;
         private Button deleteFavouriteWebsite,editFavouriteWebsite,moveFavouriteWebsite;
+        private LinearLayout favouriteWebsiteItem;
         public LinearViewHolder(View itemView) {
             super(itemView);
             favouriteWebsiteItemTitle = itemView.findViewById(R.id.favouriteWebsite_item_title);
@@ -134,6 +149,7 @@ public class favouriteWebsiteListAdapter extends RecyclerView.Adapter <favourite
             deleteFavouriteWebsite = itemView.findViewById(R.id.delete_favouriteWebsite);
             editFavouriteWebsite = itemView.findViewById(R.id.edit_favouriteWebsite);
             moveFavouriteWebsite = itemView.findViewById(R.id.move_favouriteWebsite);
+            favouriteWebsiteItem = itemView.findViewById(R.id.favouriteWebsite_item_body);
         }
     }
 }
